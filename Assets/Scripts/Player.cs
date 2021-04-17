@@ -89,7 +89,8 @@ public class Player : MonoBehaviour
     void Fire()
     {
         _canFire = Time.time + _fireRate;   //_canFire is now the current Time + cooldown time
-        Instantiate(_laser, new Vector3(transform.position.x, transform.position.y + 0.8f, transform.position.z), Quaternion.identity);
+        //Debug.Log("Time.time is now at: " + Time.time + " and _canFire is now at: " + _canFire);
+        Instantiate(_laser, new Vector3(transform.position.x, transform.position.y + 1.05f, transform.position.z), Quaternion.identity);
     }
 
     public void Damage()
