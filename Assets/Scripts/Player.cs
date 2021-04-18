@@ -16,10 +16,20 @@ public class Player : MonoBehaviour
     private float _fireRate = 0.5f;
 
     [SerializeField]
+    private float _tripleShotCooldown = 5.0f;
+
+    [SerializeField]
     private GameObject _laser;
 
     [SerializeField]
+    private GameObject _tripleShot;
+
+    [SerializeField]
     private GameObject _spwMan;
+
+    [SerializeField]
+    private bool _isTripleShotActive = false;
+
 
     //Private Variables
     private float _canFire = -1f;
@@ -90,7 +100,15 @@ public class Player : MonoBehaviour
     {
         _canFire = Time.time + _fireRate;   //_canFire is now the current Time + cooldown time
         //Debug.Log("Time.time is now at: " + Time.time + " and _canFire is now at: " + _canFire);
-        Instantiate(_laser, new Vector3(transform.position.x, transform.position.y + 1.05f, transform.position.z), Quaternion.identity);
+        if (_isTripleShotActive)
+        {
+            Instantiate(_tripleShot, transform.position, Quaternion.identity);
+
+        }
+        else
+        {
+            Instantiate(_laser, new Vector3(transform.position.x, transform.position.y + 1.05f, transform.position.z), Quaternion.identity);
+        }
     }
 
     public void Damage()
@@ -104,5 +122,17 @@ public class Player : MonoBehaviour
             _spwScr.OnPlayerDeath();
             Destroy(this.gameObject);
         }
+    }
+
+    public void TripleShotActive()
+    {
+        _isTripleShotActive = true;
+        StartCoroutine(TripleShotCooldown());
+    }
+
+    IEnumerator TripleShotCooldown()
+    {
+        yield return new WaitForSeconds(_tripleShotCooldown);
+        _isTripleShotActive = false;
     }
 }

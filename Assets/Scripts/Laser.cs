@@ -11,9 +11,17 @@ public class Laser : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector3.up * Time.deltaTime * _laserSpeed);
-        if(transform.position.y >= 8)
+        if (transform.position.y >= 8)
         {
-            Destroy(this.gameObject);
+
+            if (transform.parent != null)
+            {
+                Destroy(transform.parent.gameObject);
+            }
+            else
+            {
+                Destroy(this.gameObject);
+            }
         }
     }
 }
