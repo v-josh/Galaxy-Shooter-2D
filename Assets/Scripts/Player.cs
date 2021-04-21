@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
 
     //Seralized Private Variables
     [SerializeField]
-    private int _playerSpeed = 2;
+    private float _playerSpeed = 2.0f;
 
     [SerializeField]
     private int _playerLives = 3;
@@ -16,24 +16,43 @@ public class Player : MonoBehaviour
     private float _fireRate = 0.5f;
 
     [SerializeField]
-    private float _tripleShotCooldown = 5.0f;
+    private GameObject _laser;
 
     [SerializeField]
-    private GameObject _laser;
+    private GameObject _spwMan;
+
+    [Header("Triple Shot Power Up")]
+    [SerializeField]
+    private float _tripleShotCooldown = 5.0f;
+
 
     [SerializeField]
     private GameObject _tripleShot;
 
     [SerializeField]
-    private GameObject _spwMan;
-
-    [SerializeField]
     private bool _isTripleShotActive = false;
 
+    [Header("Speed Boost")]
+    [SerializeField]
+    private float _speedMultiplier = 1.5f;
+
+    [SerializeField]
+    private float _speedLast = 5.0f;
+
+    [SerializeField]
+    private bool _speedBoostActive = false;
+
+    [Header("Player Shield")]
+    [SerializeField]
+    private GameObject _shieldChild;
+
+    [SerializeField]
+    private int _shieldHealth = 3;
 
     //Private Variables
     private float _canFire = -1f;
     private SpawnManager _spwScr;
+    private bool _shieldActive = false;
 
     void Start()
     {
@@ -52,6 +71,16 @@ public class Player : MonoBehaviour
         if(_spwScr == null)
         {
             Debug.Log("Cannot Find Spanw Manger script!");
+        }
+
+        if(_shieldChild == null)
+        {
+            _shieldChild = this.transform.GetChild(0).gameObject;
+            _shieldChild.SetActive(false);
+        }
+        else
+        {
+            _shieldChild.SetActive(false);
         }
 
     }
@@ -113,6 +142,13 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
+        if(_shieldActive)
+        {
+            _shieldActive = false;
+            _shieldChild.SetActive(false);
+            return;
+        }
+
         _playerLives--;
 
         //Debug.Log("Player's Lives is now at: " + _playerLives);
@@ -134,5 +170,28 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(_tripleShotCooldown);
         _isTripleShotActive = false;
+    }
+
+    public void SpeedPowerActive()
+    {
+        _speedBoostActive = true;
+        StartCoroutine(SpeedBoost());
+    }
+
+    IEnumerator SpeedBoost()
+    {
+        while (_speedBoostActive)
+        {
+            _playerSpeed *= _speedMultiplier;               //Multiply Current speed with the speed mulitplier
+            yield return new WaitForSeconds(_speedLast);    //Wait for X seconds (For instance, 5 seconds)
+            _playerSpeed /= _speedMultiplier;               //Divide Current speed with the speed multiplier
+            _speedBoostActive = false;                      //Set the speed Boost Active bool to false to turn it off
+        }
+    }
+
+    public void ActiveShield()
+    {
+        _shieldActive = true;
+        _shieldChild.SetActive(true);
     }
 }
