@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -13,6 +14,9 @@ public class Player : MonoBehaviour
     private int _playerLives = 3;
 
     [SerializeField]
+    private int _scoreTotal = 0;
+
+    [SerializeField]
     private float _fireRate = 0.5f;
 
     [SerializeField]
@@ -20,6 +24,13 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private GameObject _spwMan;
+
+    [SerializeField]
+    private GameObject _managerUI;
+
+
+
+
 
     [Header("Triple Shot Power Up")]
     [SerializeField]
@@ -49,10 +60,17 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int _shieldHealth = 3;
 
+    [Header("Engine Fire")]
+    [SerializeField]
+    private List<GameObject> _engineFire;
+
     //Private Variables
     private float _canFire = -1f;
     private SpawnManager _spwScr;
     private bool _shieldActive = false;
+    private UIManager _uiManager;
+    private Text _gameOverText;
+    
 
     void Start()
     {
@@ -81,6 +99,16 @@ public class Player : MonoBehaviour
         else
         {
             _shieldChild.SetActive(false);
+        }
+
+        if(!_managerUI)
+        {
+            _uiManager = GameObject.FindGameObjectWithTag("UI").GetComponent<UIManager>();
+
+        }
+        else
+        {
+            _uiManager = _managerUI.GetComponent<UIManager>();
         }
 
     }
@@ -150,6 +178,7 @@ public class Player : MonoBehaviour
         }
 
         _playerLives--;
+        _uiManager.UpdateLives(_playerLives);
 
         //Debug.Log("Player's Lives is now at: " + _playerLives);
 
@@ -157,6 +186,14 @@ public class Player : MonoBehaviour
         {
             _spwScr.OnPlayerDeath();
             Destroy(this.gameObject);
+        }
+        else
+        {
+            int engineNumber = Random.Range(0, _engineFire.Count);
+            //Debug.Log("EngineFire.Count is: " + _engineFire.Count + " and Random Number is: " + engineNumber);
+            _engineFire[engineNumber].SetActive(true);
+            _engineFire.RemoveAt(engineNumber);
+
         }
     }
 
@@ -194,4 +231,11 @@ public class Player : MonoBehaviour
         _shieldActive = true;
         _shieldChild.SetActive(true);
     }
+
+    public void AddToScore(int playerScore)
+    {
+        _scoreTotal += playerScore;
+        _uiManager.UpdateScore(_scoreTotal);
+    }
+
 }

@@ -8,10 +8,32 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _enemySpeed = 4.0f;
 
+    [SerializeField]
+    private int _enemyScore = 10;
+
+    [SerializeField]
+    private GameObject _thePlayer;
+
+
+    //Private Variables
+    private Player _playerScript;
+    private Animator _enemyAnim;
+
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (!_thePlayer)
+        {
+            _thePlayer = GameObject.FindGameObjectWithTag("Player");
+            _playerScript = _thePlayer.GetComponent<Player>();
+        }
+        else
+        {
+            _playerScript = _thePlayer.GetComponent<Player>();
+        }
+
+        _enemyAnim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -19,16 +41,16 @@ public class Enemy : MonoBehaviour
     {
         transform.Translate(Vector3.down * Time.deltaTime * _enemySpeed);
 
-        if(transform.position.y <= -5f)
+        if (transform.position.y <= -5f)
         {
-            transform.position = new Vector3(Random.Range(-10,10), 7f, 0f);
+            transform.position = new Vector3(Random.Range(-10, 10), 7f, 0f);
         }
 
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.tag == "Player")
+        if (other.tag == "Player")
         {
 
             Player scrPlayer = other.GetComponent<Player>();
@@ -40,12 +62,19 @@ public class Enemy : MonoBehaviour
             //Combining the lines from above, but no null check
             //other.transform.GetComponent<Player>().Damage();
 
-            Destroy(this.gameObject);
+            _enemyAnim.SetTrigger("OnEnemyDeath");
+            _enemySpeed = 0f;
+            Destroy(this.gameObject, 2.3f);
         }
         else if (other.tag == "Laser")
         {
             Destroy(other.gameObject);
-            Destroy(this.gameObject);
+            _playerScript.AddToScore(_enemyScore);
+
+            _enemySpeed = 0f;
+            _enemyAnim.SetTrigger("OnEnemyDeath");
+            Destroy(this.gameObject, 2.3f);
         }
     }
 }
+

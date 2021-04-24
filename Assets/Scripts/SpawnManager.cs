@@ -32,9 +32,14 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(_enemyPrefab != null)
+
+    }
+
+    public void StartSpawning()
+    {
+        if (_enemyPrefab != null)
         {
-            StartCoroutine(SpawnEnemyRoutine() );
+            StartCoroutine(SpawnEnemyRoutine());
         }
 
         StartCoroutine(SpawnPowerupRoutine());
@@ -53,6 +58,9 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator SpawnEnemyRoutine()
     {
+        yield return new WaitForSeconds(3f);
+
+
         while (!_stopSpawning)
         {
             //Generate an enemy at a Random number between -8 and 8 on the X axis, 7 on the Y, and 0 at Z
@@ -66,6 +74,9 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator SpawnPowerupRoutine()
     {
+        yield return new WaitForSeconds(3f);
+
+
         while (_stopSpawning == false)
         {
             Vector3 postSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);
