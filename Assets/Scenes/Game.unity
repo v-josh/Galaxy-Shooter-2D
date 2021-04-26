@@ -1438,8 +1438,6 @@ MonoBehaviour:
   _engineFire:
   - {fileID: 1085557881}
   - {fileID: 486863970}
-  _laserSound: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
-  _explosionSound: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
 --- !u!212 &1921257516
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1892,6 +1890,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Asteroid
+      objectReference: {fileID: 0}
+    - target: {fileID: 5635394556578868678, guid: 783378ee9c3cd8044bb7f3804d610a17,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5681469706240659800, guid: 783378ee9c3cd8044bb7f3804d610a17,
         type: 3}

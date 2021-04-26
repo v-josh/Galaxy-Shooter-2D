@@ -12,14 +12,17 @@ public class Enemy : MonoBehaviour
     private int _enemyScore = 10;
 
     [SerializeField]
-    private GameObject _thePlayer;
+    private GameObject _enemyLaser;
 
 
     //Private Variables
+    private GameObject _thePlayer;
     private Player _playerScript;
     private Animator _enemyAnim;
     private AudioSource _sourceEnemy;
 
+    private float _fireRate = 3.0f;
+    private float _canFire = -1;
 
     // Start is called before the first frame update
     void Start()
@@ -41,13 +44,37 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CalculateMovement();
+
+        if(Time.time > _canFire)
+        {
+            EnemyFire();
+        }
+
+
+    }
+
+    void EnemyFire()
+    {
+        _fireRate = Random.Range(3f, 7f);
+        _canFire = Time.time + _fireRate;
+        GameObject enemyLaser = Instantiate(_enemyLaser, transform.position, Quaternion.identity);
+        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+        for (int i = 0; i < lasers.Length; i++)
+        {
+            lasers[i].AssignEnemyLaser();
+        }
+    }
+
+
+    void CalculateMovement()
+    {
         transform.Translate(Vector3.down * Time.deltaTime * _enemySpeed);
 
         if (transform.position.y <= -5f)
         {
             transform.position = new Vector3(Random.Range(-10, 10), 7f, 0f);
         }
-
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -77,6 +104,7 @@ public class Enemy : MonoBehaviour
             _enemySpeed = 0f;
             _enemyAnim.SetTrigger("OnEnemyDeath");
             _sourceEnemy.Play();
+            Destroy(GetComponent<Collider2D>());
             Destroy(this.gameObject, 2.3f);
         }
     }

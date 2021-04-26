@@ -50,7 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemySpeed: 4
   _enemyScore: 10
-  _thePlayer: {fileID: 0}
+  _enemyLaser: {fileID: 5715947078765889363, guid: fc9651065ea69e943b67238aa84c3fcc,
+    type: 3}
 --- !u!212 &1908821341979730347
 SpriteRenderer:
   m_ObjectHideFlags: 0
