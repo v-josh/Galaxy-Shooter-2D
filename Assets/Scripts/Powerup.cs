@@ -13,6 +13,8 @@ public class Powerup : MonoBehaviour
     [SerializeField]
     private float _powerUpSpeed = 3.0f;
 
+    [SerializeField]
+    private AudioClip _clipPower;
 
 
     [SerializeField]
@@ -44,6 +46,7 @@ public class Powerup : MonoBehaviour
     {
         if(collision.gameObject.tag == "Player")
         {
+            AudioSource.PlayClipAtPoint(_clipPower, transform.position);
             Player ps = collision.gameObject.GetComponent < Player> ();
             if(ps != null)
             {

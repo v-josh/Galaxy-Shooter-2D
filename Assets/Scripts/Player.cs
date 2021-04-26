@@ -31,7 +31,6 @@ public class Player : MonoBehaviour
 
 
 
-
     [Header("Triple Shot Power Up")]
     [SerializeField]
     private float _tripleShotCooldown = 5.0f;
@@ -64,17 +63,29 @@ public class Player : MonoBehaviour
     [SerializeField]
     private List<GameObject> _engineFire;
 
+
+    /*
+    [Header("Sounds & Audio")]
+    [SerializeField]
+    private AudioClip _laserSound;
+
+    [SerializeField]
+    private AudioClip _explosionSound;
+    */
+
     //Private Variables
     private float _canFire = -1f;
     private SpawnManager _spwScr;
     private bool _shieldActive = false;
     private UIManager _uiManager;
     private Text _gameOverText;
+
+    //private AudioSource _sourceLaser;
+    private AudioSource _sourcePlayer;
     
 
     void Start()
     {
-        //transform.position = new Vector3(0, 0, 0);
 
         if(_spwMan != null)
         {
@@ -110,6 +121,15 @@ public class Player : MonoBehaviour
         {
             _uiManager = _managerUI.GetComponent<UIManager>();
         }
+
+        /*
+        if(_laser)
+        {
+            _sourceLaser = _laser.GetComponent<AudioSource>();
+        }
+        */
+
+        _sourcePlayer = GetComponent<AudioSource>();
 
     }
 
@@ -155,6 +175,7 @@ public class Player : MonoBehaviour
 
     void Fire()
     {
+
         _canFire = Time.time + _fireRate;   //_canFire is now the current Time + cooldown time
         //Debug.Log("Time.time is now at: " + Time.time + " and _canFire is now at: " + _canFire);
         if (_isTripleShotActive)
@@ -166,6 +187,12 @@ public class Player : MonoBehaviour
         {
             Instantiate(_laser, new Vector3(transform.position.x, transform.position.y + 1.05f, transform.position.z), Quaternion.identity);
         }
+
+        //PlayAudioClip(_laserSound);
+
+        //_sourceLaser.Play();
+
+        
     }
 
     public void Damage()
@@ -184,6 +211,8 @@ public class Player : MonoBehaviour
 
         if(_playerLives <= 0)
         {
+            //PlayAudioClip(_explosionSound);
+
             _spwScr.OnPlayerDeath();
             Destroy(this.gameObject);
         }
@@ -234,8 +263,17 @@ public class Player : MonoBehaviour
 
     public void AddToScore(int playerScore)
     {
+        //PlayAudioClip(_explosionSound);
         _scoreTotal += playerScore;
         _uiManager.UpdateScore(_scoreTotal);
     }
+
+    /*
+    void PlayAudioClip(AudioClip ac)
+    {
+        _sourcePlayer.clip = ac;
+        _sourcePlayer.Play();
+    }
+    */
 
 }

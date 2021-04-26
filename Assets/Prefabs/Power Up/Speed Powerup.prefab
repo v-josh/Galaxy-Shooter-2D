@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _powerUpSpeed: 3
-  _speedIncrease: 2
+  _clipPower: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
   _powerUpType: 1
 --- !u!95 &-5109705793701519582
 Animator:

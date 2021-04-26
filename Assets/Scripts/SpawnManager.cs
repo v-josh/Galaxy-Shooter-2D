@@ -81,7 +81,7 @@ public class SpawnManager : MonoBehaviour
         {
             Vector3 postSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);
             //GameObject powerUpSpawn = RandomPowerUp();
-            //Instantiate(_tripleShotPrefab, postSpawn, Quaternion.identity);
+            //Instantiate(_powerUps[1], postSpawn, Quaternion.identity);
             Instantiate(_powerUps[Random.Range(0,_powerUps.Length)], postSpawn, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(3, 8));
         }

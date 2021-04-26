@@ -18,6 +18,7 @@ public class Enemy : MonoBehaviour
     //Private Variables
     private Player _playerScript;
     private Animator _enemyAnim;
+    private AudioSource _sourceEnemy;
 
 
     // Start is called before the first frame update
@@ -34,6 +35,7 @@ public class Enemy : MonoBehaviour
         }
 
         _enemyAnim = GetComponent<Animator>();
+        _sourceEnemy = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -64,6 +66,7 @@ public class Enemy : MonoBehaviour
 
             _enemyAnim.SetTrigger("OnEnemyDeath");
             _enemySpeed = 0f;
+            _sourceEnemy.Play();
             Destroy(this.gameObject, 2.3f);
         }
         else if (other.tag == "Laser")
@@ -73,6 +76,7 @@ public class Enemy : MonoBehaviour
 
             _enemySpeed = 0f;
             _enemyAnim.SetTrigger("OnEnemyDeath");
+            _sourceEnemy.Play();
             Destroy(this.gameObject, 2.3f);
         }
     }
