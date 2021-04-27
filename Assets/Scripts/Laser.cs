@@ -63,6 +63,7 @@ public class Laser : MonoBehaviour
         {
             Player ps = collision.GetComponent<Player>();
             ps.Damage();
+            Destroy(this.gameObject);
         }
     }
 

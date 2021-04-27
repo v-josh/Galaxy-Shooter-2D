@@ -70,14 +70,6 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _maxAcceleration = 5.0f;
 
-    /*
-    [Header("Sounds & Audio")]
-    [SerializeField]
-    private AudioClip _laserSound;
-
-    [SerializeField]
-    private AudioClip _explosionSound;
-    */
 
     //Private Variables
     private float _canFire = -1f;
@@ -86,8 +78,8 @@ public class Player : MonoBehaviour
     private UIManager _uiManager;
     private Text _gameOverText;
     private float _initialAcceleration;
+    private bool _thrustCoolDown = false;
 
-    //private AudioSource _sourceLaser;
     private AudioSource _sourcePlayer;
     
 
@@ -129,13 +121,6 @@ public class Player : MonoBehaviour
             _uiManager = _managerUI.GetComponent<UIManager>();
         }
 
-        /*
-        if(_laser)
-        {
-            _sourceLaser = _laser.GetComponent<AudioSource>();
-        }
-        */
-
         _sourcePlayer = GetComponent<AudioSource>();
         _initialAcceleration = _accelerationRate;
 
@@ -166,21 +151,34 @@ public class Player : MonoBehaviour
         Vector3 direction = new Vector3(horizontalAxis, verticalAxis, 0);
 
         
+        ///Phase One: Thrusters Implemented
 
-        if(Input.GetKey(KeyCode.LeftShift))
+        if(Input.GetKey(KeyCode.LeftShift) && !_thrustCoolDown)
         {
-            //while (_accelerationRate < _maxAcceleration)
-            //{
-            //    _accelerationRate += (_accelerationRate * Time.deltaTime);
-            //}
             if(_accelerationRate < _maxAcceleration)
             {
                 _accelerationRate += (_accelerationRate * Time.deltaTime);
+                _uiManager.ThrustText("Using");
+
+
+            }
+            else
+            {
+                _thrustCoolDown = true;
             }
         }
         else if (Input.GetKeyUp(KeyCode.LeftShift) || _accelerationRate > _initialAcceleration)
         {
             _accelerationRate -= (_initialAcceleration * Time.deltaTime);
+            if(!_thrustCoolDown)
+            {
+                _uiManager.ThrustText("Cooling Off");
+            }
+            else
+            {
+                _uiManager.ThrustText("COOLING DOWN");
+            }
+
         }
 
         if(_accelerationRate > _maxAcceleration)
@@ -190,9 +188,11 @@ public class Player : MonoBehaviour
         else if(_accelerationRate < _initialAcceleration)
         {
             _accelerationRate = _initialAcceleration;
+            _uiManager.ThrustText("Ready");
+            _thrustCoolDown = false;
         }
-        
 
+        _uiManager.ThrustUI(_accelerationRate);
 
 
         //Vertical Clamp
@@ -218,7 +218,6 @@ public class Player : MonoBehaviour
     {
 
         _canFire = Time.time + _fireRate;   //_canFire is now the current Time + cooldown time
-        //Debug.Log("Time.time is now at: " + Time.time + " and _canFire is now at: " + _canFire);
         if (_isTripleShotActive)
         {
             Instantiate(_tripleShot, transform.position, Quaternion.identity);
@@ -227,13 +226,7 @@ public class Player : MonoBehaviour
         else
         {
             Instantiate(_laser, new Vector3(transform.position.x, transform.position.y + 1.05f, transform.position.z), Quaternion.identity);
-        }
-
-        //PlayAudioClip(_laserSound);
-
-        //_sourceLaser.Play();
-
-        
+        }        
     }
 
     public void Damage()
@@ -248,19 +241,14 @@ public class Player : MonoBehaviour
         _playerLives--;
         _uiManager.UpdateLives(_playerLives);
 
-        //Debug.Log("Player's Lives is now at: " + _playerLives);
-
         if(_playerLives <= 0)
         {
-            //PlayAudioClip(_explosionSound);
-
             _spwScr.OnPlayerDeath();
             Destroy(this.gameObject);
         }
         else
         {
             int engineNumber = Random.Range(0, _engineFire.Count);
-            //Debug.Log("EngineFire.Count is: " + _engineFire.Count + " and Random Number is: " + engineNumber);
             _engineFire[engineNumber].SetActive(true);
             _engineFire.RemoveAt(engineNumber);
 
@@ -304,17 +292,8 @@ public class Player : MonoBehaviour
 
     public void AddToScore(int playerScore)
     {
-        //PlayAudioClip(_explosionSound);
         _scoreTotal += playerScore;
         _uiManager.UpdateScore(_scoreTotal);
     }
-
-    /*
-    void PlayAudioClip(AudioClip ac)
-    {
-        _sourcePlayer.clip = ac;
-        _sourcePlayer.Play();
-    }
-    */
 
 }

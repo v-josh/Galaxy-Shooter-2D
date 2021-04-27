@@ -28,6 +28,14 @@ public class UIManager : MonoBehaviour
     private GameObject _gameManager;
 
 
+    [Header("Thrust UI")]
+    [SerializeField]
+    private Text _thrustText;
+
+    [SerializeField]
+    private Slider _barThrust;
+
+
     //Private Variables
     private GameManager _gm;
 
@@ -65,6 +73,17 @@ public class UIManager : MonoBehaviour
             GameOverSequence();
         }
     }
+
+    public void ThrustUI(float x)
+    {
+        _barThrust.value = (x);
+    }
+
+    public void ThrustText(string t)
+    {
+        _thrustText.text = t;
+    }
+
 
     void GameOverSequence()
     {
