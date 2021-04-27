@@ -1438,6 +1438,8 @@ MonoBehaviour:
   _engineFire:
   - {fileID: 1085557881}
   - {fileID: 486863970}
+  _accelerationRate: 1
+  _maxAcceleration: 4
 --- !u!212 &1921257516
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -63,6 +63,12 @@ public class Player : MonoBehaviour
     [SerializeField]
     private List<GameObject> _engineFire;
 
+    [Header("Thrusters Specs")]
+    [SerializeField]
+    private float _accelerationRate = 1.0f;
+
+    [SerializeField]
+    private float _maxAcceleration = 5.0f;
 
     /*
     [Header("Sounds & Audio")]
@@ -79,6 +85,7 @@ public class Player : MonoBehaviour
     private bool _shieldActive = false;
     private UIManager _uiManager;
     private Text _gameOverText;
+    private float _initialAcceleration;
 
     //private AudioSource _sourceLaser;
     private AudioSource _sourcePlayer;
@@ -130,6 +137,7 @@ public class Player : MonoBehaviour
         */
 
         _sourcePlayer = GetComponent<AudioSource>();
+        _initialAcceleration = _accelerationRate;
 
     }
 
@@ -137,6 +145,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         //Player Movement
+        
         CalculateMovement();
 
         //If the player press the Spacebar AND has surprassed the cooldown timer
@@ -146,12 +155,44 @@ public class Player : MonoBehaviour
         }
     }
 
+
+
+
     void CalculateMovement()
     {
         //Variables
         float horizontalAxis = Input.GetAxis("Horizontal");
         float verticalAxis = Input.GetAxis("Vertical");
         Vector3 direction = new Vector3(horizontalAxis, verticalAxis, 0);
+
+        
+
+        if(Input.GetKey(KeyCode.LeftShift))
+        {
+            //while (_accelerationRate < _maxAcceleration)
+            //{
+            //    _accelerationRate += (_accelerationRate * Time.deltaTime);
+            //}
+            if(_accelerationRate < _maxAcceleration)
+            {
+                _accelerationRate += (_accelerationRate * Time.deltaTime);
+            }
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftShift) || _accelerationRate > _initialAcceleration)
+        {
+            _accelerationRate -= (_initialAcceleration * Time.deltaTime);
+        }
+
+        if(_accelerationRate > _maxAcceleration)
+        {
+            _accelerationRate = _maxAcceleration;
+        }
+        else if(_accelerationRate < _initialAcceleration)
+        {
+            _accelerationRate = _initialAcceleration;
+        }
+        
+
 
 
         //Vertical Clamp
@@ -168,7 +209,7 @@ public class Player : MonoBehaviour
         }
 
         //Move the player
-        transform.Translate(direction * Time.deltaTime * _playerSpeed);
+        transform.Translate(direction * Time.deltaTime * _playerSpeed * _accelerationRate);
 
         
     }
