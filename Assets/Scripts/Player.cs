@@ -57,7 +57,7 @@ public class Player : MonoBehaviour
     private GameObject _shieldChild;
 
     [SerializeField]
-    private int _shieldHealth = 3;
+    private int _shieldHealth = 2;
 
     [Header("Engine Fire")]
     [SerializeField]
@@ -77,10 +77,16 @@ public class Player : MonoBehaviour
     private bool _shieldActive = false;
     private UIManager _uiManager;
     private Text _gameOverText;
+    private AudioSource _sourcePlayer;
+
+    //Thrusters Variables
     private float _initialAcceleration;
     private bool _thrustCoolDown = false;
 
-    private AudioSource _sourcePlayer;
+    //Shield Variables
+    private Renderer _rendShield;
+    private Color _colorShield;
+
     
 
     void Start()
@@ -124,6 +130,17 @@ public class Player : MonoBehaviour
         _sourcePlayer = GetComponent<AudioSource>();
         _initialAcceleration = _accelerationRate;
 
+        _rendShield = _shieldChild.GetComponent<Renderer>();
+        if (_rendShield == null)
+        {
+            Debug.Log("Renderer for the shield is null");
+        }
+        else
+        {
+            _colorShield = _rendShield.material.color;
+
+        }
+
     }
 
     // Update is called once per frame
@@ -150,50 +167,7 @@ public class Player : MonoBehaviour
         float verticalAxis = Input.GetAxis("Vertical");
         Vector3 direction = new Vector3(horizontalAxis, verticalAxis, 0);
 
-        
-        ///Phase One: Thrusters Implemented
-
-        if(Input.GetKey(KeyCode.LeftShift) && !_thrustCoolDown)
-        {
-            if(_accelerationRate < _maxAcceleration)
-            {
-                _accelerationRate += (_accelerationRate * Time.deltaTime);
-                _uiManager.ThrustText("Using");
-
-
-            }
-            else
-            {
-                _thrustCoolDown = true;
-            }
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftShift) || _accelerationRate > _initialAcceleration)
-        {
-            _accelerationRate -= (_initialAcceleration * Time.deltaTime);
-            if(!_thrustCoolDown)
-            {
-                _uiManager.ThrustText("Cooling Off");
-            }
-            else
-            {
-                _uiManager.ThrustText("COOLING DOWN");
-            }
-
-        }
-
-        if(_accelerationRate > _maxAcceleration)
-        {
-            _accelerationRate = _maxAcceleration;
-        }
-        else if(_accelerationRate < _initialAcceleration)
-        {
-            _accelerationRate = _initialAcceleration;
-            _uiManager.ThrustText("Ready");
-            _thrustCoolDown = false;
-        }
-
-        _uiManager.ThrustUI(_accelerationRate);
-
+        ThrustersActivate();
 
         //Vertical Clamp
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.8f, 0f), 0f);
@@ -210,8 +184,51 @@ public class Player : MonoBehaviour
 
         //Move the player
         transform.Translate(direction * Time.deltaTime * _playerSpeed * _accelerationRate);
+    }
 
-        
+    void ThrustersActivate()
+    {
+        ///START OF THRUSTERS IMPLEMENTATION
+        if (Input.GetKey(KeyCode.LeftShift) && !_thrustCoolDown)
+        {
+            if (_accelerationRate < _maxAcceleration)
+            {
+                _accelerationRate += (_accelerationRate * Time.deltaTime);
+                _uiManager.ThrustText("Using");
+            }
+            else
+            {
+                _thrustCoolDown = true;
+            }
+        }
+        //Helps decrease the thrusters
+        else if (Input.GetKeyUp(KeyCode.LeftShift) || _accelerationRate > _initialAcceleration)
+        {
+            _accelerationRate -= (_initialAcceleration * Time.deltaTime);
+            if (!_thrustCoolDown)
+            {
+                _uiManager.ThrustText("Decreasing");
+            }
+            else
+            {
+                _uiManager.ThrustText("COOLING OFF");
+            }
+        }
+
+        //Reset the acceleration Rate to a whole number
+        if (_accelerationRate > _maxAcceleration)
+        {
+            _accelerationRate = _maxAcceleration;
+        }
+        else if (_accelerationRate < _initialAcceleration)
+        {
+            _accelerationRate = _initialAcceleration;
+            _uiManager.ThrustText("Ready");
+            _thrustCoolDown = false;
+        }
+
+        _uiManager.ThrustUI(_accelerationRate); //Change the Thruster bar
+        ///END THRUSTER IMPLEMENTATION
     }
 
     void Fire()
@@ -231,28 +248,31 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
-        if(_shieldActive)
+        if (_shieldActive)
         {
-            _shieldActive = false;
-            _shieldChild.SetActive(false);
-            return;
-        }
-
-        _playerLives--;
-        _uiManager.UpdateLives(_playerLives);
-
-        if(_playerLives <= 0)
-        {
-            _spwScr.OnPlayerDeath();
-            Destroy(this.gameObject);
+            ShieldHealth();
         }
         else
         {
-            int engineNumber = Random.Range(0, _engineFire.Count);
-            _engineFire[engineNumber].SetActive(true);
-            _engineFire.RemoveAt(engineNumber);
-
+            _playerLives--;
+            _uiManager.UpdateLives(_playerLives);
+            if (_playerLives >= 1)
+            {
+                int engineNumber = Random.Range(0, _engineFire.Count);
+                _engineFire[engineNumber].SetActive(true);
+                _engineFire.RemoveAt(engineNumber);
+            }
         }
+
+        if(_playerLives <= 0)
+        {
+            
+            _spwScr.OnPlayerDeath();
+            _uiManager.UpdateLives(_playerLives);
+            Destroy(this.gameObject);
+        }
+
+
     }
 
     public void TripleShotActive()
@@ -286,8 +306,16 @@ public class Player : MonoBehaviour
 
     public void ActiveShield()
     {
+        //RESET SHIELD
+        _colorShield.a = 1f;
+        _rendShield.material.color = _colorShield;
+        _shieldHealth = 2;
+
+        //ACTIVATE SHIELD
         _shieldActive = true;
         _shieldChild.SetActive(true);
+
+
     }
 
     public void AddToScore(int playerScore)
@@ -295,5 +323,25 @@ public class Player : MonoBehaviour
         _scoreTotal += playerScore;
         _uiManager.UpdateScore(_scoreTotal);
     }
+
+    /// START SHIELD HEALTH IMPLEMENTATION
+    void ShieldHealth()
+    {
+        if (_shieldHealth > 0)
+        {
+            _shieldHealth--;
+            _colorShield.a -= 0.33f;
+            _rendShield.material.color = _colorShield;
+            return;
+        }
+        else
+        {
+            _shieldChild.SetActive(false);
+            _shieldActive = false;
+            return;
+        }
+    }
+
+    ///END SHIELD HEALTH IMPLEMENTATION
 
 }

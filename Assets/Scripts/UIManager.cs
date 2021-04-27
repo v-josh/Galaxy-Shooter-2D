@@ -67,11 +67,17 @@ public class UIManager : MonoBehaviour
 
     public void UpdateLives(int currentLives)
     {
-        _livesImg.sprite = _livesSprite[currentLives];
+
+        //_livesImg.sprite = _livesSprite[currentLives];
+        if(currentLives >= 0)
+        {
+            _livesImg.sprite = _livesSprite[currentLives];
+        }
         if (currentLives <= 0)
         {
             GameOverSequence();
         }
+
     }
 
     public void ThrustUI(float x)
