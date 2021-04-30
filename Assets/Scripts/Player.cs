@@ -357,5 +357,15 @@ public class Player : MonoBehaviour
     }
 
     ///END SHIELD HEALTH IMPLEMENTATION
+    
+    public void AmmoRefill()
+    {
+        if(_ammoCount < 15)
+        {
+            _ammoCount = 15;
+            _uiManager.AmmoText(_ammoCount);
+        }
+    }
+
 
 }

@@ -62,6 +62,7 @@ public class Powerup : MonoBehaviour
                         ps.ActiveShield();
                         break;
                     case 3: //Ammo Refill
+                        ps.AmmoRefill();
                         break;
                     default:
                         break;
