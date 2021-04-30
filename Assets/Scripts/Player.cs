@@ -70,6 +70,10 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _maxAcceleration = 5.0f;
 
+    [Header("Ammo Refill and Reload")]
+    [SerializeField]
+    private AudioClip _ammoEmpty;
+
 
     //Private Variables
     private float _canFire = -1f;
@@ -78,6 +82,7 @@ public class Player : MonoBehaviour
     private UIManager _uiManager;
     private Text _gameOverText;
     private AudioSource _sourcePlayer;
+    private int _ammoCount = 15;
 
     //Thrusters Variables
     private float _initialAcceleration;
@@ -242,7 +247,16 @@ public class Player : MonoBehaviour
         }
         else
         {
-            Instantiate(_laser, new Vector3(transform.position.x, transform.position.y + 1.05f, transform.position.z), Quaternion.identity);
+            if (_ammoCount > 0)
+            {
+                _ammoCount--;
+                Instantiate(_laser, new Vector3(transform.position.x, transform.position.y + 1.05f, transform.position.z), Quaternion.identity);
+                _uiManager.AmmoText(_ammoCount);
+            }
+            else
+            {
+                _sourcePlayer.PlayOneShot(_ammoEmpty);
+            }
         }        
     }
 

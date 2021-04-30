@@ -6,12 +6,12 @@ public class Powerup : MonoBehaviour
 {
 
     //Private Variables
-    enum PowerType { tripleShot = 0, speed = 1, shield = 2 }
+    enum PowerType { tripleShot = 0, speed = 1, shield = 2, ammo = 3 }
     private int _selectedType;
 
     //Serialize Fields
     [SerializeField]
-    private float _powerUpSpeed = 3.0f;
+    private float _fallSpeed = 3.0f;
 
     [SerializeField]
     private AudioClip _clipPower;
@@ -32,7 +32,7 @@ public class Powerup : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector3.down * Time.deltaTime * _powerUpSpeed);
+        transform.Translate(Vector3.down * Time.deltaTime * _fallSpeed);
         if(transform.position.y <= -4.5f)
         {
             
@@ -60,6 +60,8 @@ public class Powerup : MonoBehaviour
                         break;
                     case 2: //Shield
                         ps.ActiveShield();
+                        break;
+                    case 3: //Ammo Refill
                         break;
                     default:
                         break;

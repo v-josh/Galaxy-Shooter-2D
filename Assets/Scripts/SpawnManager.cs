@@ -83,12 +83,13 @@ public class SpawnManager : MonoBehaviour
             //GameObject powerUpSpawn = RandomPowerUp();
 
             //Random Generate Power Ups
-            //Instantiate(_powerUps[Random.Range(0,_powerUps.Length)], postSpawn, Quaternion.identity);
+            Instantiate(_powerUps[Random.Range(0,_powerUps.Length)], postSpawn, Quaternion.identity);
 
             //Manual Spawning For Testing purposes only
             //Instantiate(_powerUps[0], postSpawn, Quaternion.identity);    //Triple Shot
             //Instantiate(_powerUps[1], postSpawn, Quaternion.identity);    //Speed
-            Instantiate(_powerUps[2], postSpawn, Quaternion.identity);    //Shield
+            //Instantiate(_powerUps[2], postSpawn, Quaternion.identity);    //Shield
+            //Instantiate(_powerUps[3], postSpawn, Quaternion.identity);    //Ammo Refill
 
             yield return new WaitForSeconds(Random.Range(3, 8));
         }

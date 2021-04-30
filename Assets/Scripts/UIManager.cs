@@ -35,6 +35,10 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Slider _barThrust;
 
+    [Header("Ammo Refill")]
+    [SerializeField]
+    private Text _ammoText;
+
 
     //Private Variables
     private GameManager _gm;
@@ -88,6 +92,11 @@ public class UIManager : MonoBehaviour
     public void ThrustText(string t)
     {
         _thrustText.text = t;
+    }
+
+    public void AmmoText(int i)
+    {
+        _ammoText.text = i.ToString();
     }
 
 
