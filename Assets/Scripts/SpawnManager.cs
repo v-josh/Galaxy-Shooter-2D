@@ -60,15 +60,12 @@ public class SpawnManager : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
 
-
         while (!_stopSpawning)
         {
             //Generate an enemy at a Random number between -8 and 8 on the X axis, 7 on the Y, and 0 at Z
             //The rotation of the clone is the same as the original and attach it to the Enemy Container
             Instantiate(_enemyPrefab, new Vector3(Random.Range(-8, 8), 7f, 0f), Quaternion.identity, _enemyContainer.transform);
-            yield return new WaitForSeconds(_enemySpawnTime);
-
-            
+            yield return new WaitForSeconds(_enemySpawnTime);  
         }
     }
 
@@ -80,7 +77,6 @@ public class SpawnManager : MonoBehaviour
         while (_stopSpawning == false)
         {
             Vector3 postSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);
-            //GameObject powerUpSpawn = RandomPowerUp();
 
             //Random Generate Power Ups
             Instantiate(_powerUps[Random.Range(0,_powerUps.Length)], postSpawn, Quaternion.identity);
@@ -90,7 +86,7 @@ public class SpawnManager : MonoBehaviour
             //Instantiate(_powerUps[1], postSpawn, Quaternion.identity);    //Speed
             //Instantiate(_powerUps[2], postSpawn, Quaternion.identity);    //Shield
             //Instantiate(_powerUps[3], postSpawn, Quaternion.identity);    //Ammo Refill
-
+            //Instantiate(_powerUps[4], postSpawn, Quaternion.identity);    //Health Refill
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
     }

@@ -84,6 +84,7 @@ public class Player : MonoBehaviour
     private AudioSource _sourcePlayer;
     private int _ammoCount = 15;
 
+
     //Thrusters Variables
     private float _initialAcceleration;
     private bool _thrustCoolDown = false;
@@ -92,7 +93,10 @@ public class Player : MonoBehaviour
     private Renderer _rendShield;
     private Color _colorShield;
 
-    
+    //Random Engine
+    private int _firstEngine;
+    private int _secondEngine;
+
 
     void Start()
     {
@@ -145,7 +149,16 @@ public class Player : MonoBehaviour
             _colorShield = _rendShield.material.color;
 
         }
-
+        //Choosing Engine at random
+        _firstEngine = Random.Range(0, _engineFire.Count);
+        if(_firstEngine == 0)
+        {
+            _secondEngine = 1;
+        }
+        else
+        {
+            _secondEngine = 0;
+        }
     }
 
     // Update is called once per frame
@@ -161,9 +174,6 @@ public class Player : MonoBehaviour
             Fire();
         }
     }
-
-
-
 
     void CalculateMovement()
     {
@@ -262,6 +272,9 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
+
+        _uiManager.CameraShake();
+
         if (_shieldActive)
         {
             ShieldHealth();
@@ -272,9 +285,7 @@ public class Player : MonoBehaviour
             _uiManager.UpdateLives(_playerLives);
             if (_playerLives >= 1)
             {
-                int engineNumber = Random.Range(0, _engineFire.Count);
-                _engineFire[engineNumber].SetActive(true);
-                _engineFire.RemoveAt(engineNumber);
+                EngineOnFire(true);
             }
         }
 
@@ -285,8 +296,6 @@ public class Player : MonoBehaviour
             _uiManager.UpdateLives(_playerLives);
             Destroy(this.gameObject);
         }
-
-
     }
 
     public void TripleShotActive()
@@ -367,5 +376,47 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void HealthRefill()
+    {
+        if(_playerLives < 3)
+        {
+            _playerLives++;
+            _uiManager.UpdateLives(_playerLives);
+            EngineOnFire(false);
+        }
+    }
+
+    void EngineOnFire(bool b)
+    {
+        if(b)
+        {
+            if(_playerLives == 2)
+            {
+                _engineFire[_firstEngine].SetActive(true);
+            }
+            else if(_playerLives == 1)
+            {
+                _engineFire[_secondEngine].SetActive(true);
+            }
+
+            /*
+            // Initial Random Engine Choice Logic
+            int engineNumber = Random.Range(0, _engineFire.Count);
+            _engineFire[engineNumber].SetActive(true);
+            _engineFire.RemoveAt(engineNumber);
+            */
+        }
+        else
+        {
+            if(_playerLives == 3)
+            {
+                _engineFire[_firstEngine].SetActive(false);
+            }
+            else if(_playerLives == 2)
+            {
+                _engineFire[_secondEngine].SetActive(false);
+            }
+        }
+    }
 
 }

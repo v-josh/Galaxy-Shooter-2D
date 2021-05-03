@@ -27,6 +27,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GameObject _gameManager;
 
+    [SerializeField]
+    private Camera _mainCamera;
+
 
     [Header("Thrust UI")]
     [SerializeField]
@@ -42,6 +45,7 @@ public class UIManager : MonoBehaviour
 
     //Private Variables
     private GameManager _gm;
+    private Vector3 _cameraInitial;
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +58,11 @@ public class UIManager : MonoBehaviour
         if(_gameManager)
         {
             _gm = _gameManager.GetComponent < GameManager >();
+        }
+
+        if(_mainCamera)
+        {
+            _cameraInitial = _mainCamera.transform.position;
         }
 
     }
@@ -107,6 +116,12 @@ public class UIManager : MonoBehaviour
         StartCoroutine(GameOver());
     }
 
+    public void CameraShake()
+    {
+        StartCoroutine(PlayerDamage());
+    }
+
+
     IEnumerator GameOver()
     {
         while (true)
@@ -116,5 +131,15 @@ public class UIManager : MonoBehaviour
             _gameOverText.gameObject.SetActive(false);
             yield return new WaitForSeconds(0.5f);
         }
+    }
+
+    IEnumerator PlayerDamage()
+    {
+        Vector3 _camPos = _mainCamera.transform.position;
+        _camPos.x = Random.Range(-0.1f, 0.1f);
+        _camPos.y = Random.Range(-0.1f, 0.1f);
+        _mainCamera.transform.position = _camPos;
+        yield return new WaitForSeconds(0.2f);
+        _mainCamera.transform.position = _cameraInitial;
     }
 }

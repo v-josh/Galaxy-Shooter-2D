@@ -340,6 +340,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 482c8e4c0346b704aa5f1760c3c989d5, type: 3}
   - {fileID: 21300000, guid: 9fe6f40efddf0b64fb68a3382b14a4db, type: 3}
   _gameManager: {fileID: 974879656}
+  _mainCamera: {fileID: 2040927136}
   _thrustText: {fileID: 143892121}
   _barThrust: {fileID: 59261000}
   _ammoText: {fileID: 1449408579}
@@ -1179,6 +1180,7 @@ MonoBehaviour:
   - {fileID: 4469557635891370793, guid: b4430074ae8b44d4eae89a7a552ddec0, type: 3}
   - {fileID: 5323736385438849255, guid: bca945f2eaab62e4eaf8961a4a4bedeb, type: 3}
   - {fileID: 3712144111394421484, guid: 2a60878d85575de418f1744434af7f06, type: 3}
+  - {fileID: 469767179675274453, guid: 5579b6a8091d20845ad3041b8dbf5e07, type: 3}
 --- !u!4 &740625445
 Transform:
   m_ObjectHideFlags: 0
@@ -2374,7 +2376,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2040927134}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
