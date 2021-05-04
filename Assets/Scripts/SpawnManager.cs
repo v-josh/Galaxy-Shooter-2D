@@ -15,6 +15,9 @@ public class SpawnManager : MonoBehaviour
     private GameObject _enemyContainer;
 
     [SerializeField]
+    private float _delaySpawn = 5f;
+
+    [SerializeField]
     private GameObject[] _powerUps;
 
     /*
@@ -27,6 +30,9 @@ public class SpawnManager : MonoBehaviour
 
     //Private Variables
     private bool _stopSpawning = false;
+    private float _canSpawn = -1f;
+    private bool _randomSpin = true;
+    private int _theRandomNumber;
 
 
     // Start is called before the first frame update
@@ -72,14 +78,48 @@ public class SpawnManager : MonoBehaviour
     IEnumerator SpawnPowerupRoutine()
     {
         yield return new WaitForSeconds(3f);
-
+        
 
         while (_stopSpawning == false)
         {
+            _theRandomNumber = Random.Range(0, _powerUps.Length);
             Vector3 postSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);
 
+            if(_theRandomNumber == 5)
+            {
+                _randomSpin = true;
+            }
+            else
+            {
+                _randomSpin = false;
+            }
+
+            
+            //Decreasing the spawn of the secondary weapon
+            while (_randomSpin)
+            {
+                yield return new WaitForSeconds(0.5f);
+                if (_theRandomNumber == 5)
+                {
+                    if (Time.time >= _canSpawn)
+                    {
+                        _canSpawn = Time.time + _delaySpawn;
+                        _randomSpin = false;
+                    }
+                    else
+                    {
+                        _theRandomNumber = Random.Range(0, _powerUps.Length);
+                    }
+                }
+                else
+                {
+                    _randomSpin = false;
+                }
+            }
+            
+
             //Random Generate Power Ups
-            Instantiate(_powerUps[Random.Range(0,_powerUps.Length)], postSpawn, Quaternion.identity);
+            Instantiate(_powerUps[_theRandomNumber], postSpawn, Quaternion.identity);
 
             //Manual Spawning For Testing purposes only
             //Instantiate(_powerUps[0], postSpawn, Quaternion.identity);    //Triple Shot
@@ -87,6 +127,7 @@ public class SpawnManager : MonoBehaviour
             //Instantiate(_powerUps[2], postSpawn, Quaternion.identity);    //Shield
             //Instantiate(_powerUps[3], postSpawn, Quaternion.identity);    //Ammo Refill
             //Instantiate(_powerUps[4], postSpawn, Quaternion.identity);    //Health Refill
+            //Instantiate(_powerUps[5], postSpawn, Quaternion.identity);    //Fireworks
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
     }

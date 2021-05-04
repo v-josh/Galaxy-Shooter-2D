@@ -68,6 +68,7 @@ public class Powerup : MonoBehaviour
                         ps.HealthRefill();
                         break;
                     case 5: //Fireworks (secondary weapon)
+                        ps.Fireworks();
                         break;
                     default:
                         break;

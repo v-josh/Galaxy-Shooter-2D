@@ -11,16 +11,27 @@ public class Laser : MonoBehaviour
     [SerializeField]
     private bool _isEnemyLaser = false;
 
+    [SerializeField]
+    private bool _isFireworks = false;
+
     void Update()
     {
         if(!_isEnemyLaser)
         {
-            PlayerLaser();
+            if (!_isFireworks)
+            {
+                PlayerLaser();
+            }
+            else
+            {
+                Fireworks();
+            }
         }
         else
         {
             EnemyLaser();
         }
+
     }
 
     void PlayerLaser()
@@ -57,6 +68,17 @@ public class Laser : MonoBehaviour
         }
     }
 
+    void Fireworks()
+    {
+        transform.Translate(Vector3.up * Time.deltaTime * _laserSpeed);
+        if (transform.position.y >= 11 || transform.position.y <= -11 || transform.position.x >= 11 || transform.position.x <= -11)
+        {
+
+                Destroy(this.gameObject);
+        }
+    }
+
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.tag == "Player" && _isEnemyLaser)
@@ -71,6 +93,8 @@ public class Laser : MonoBehaviour
     {
         _isEnemyLaser = true;
     }
+
+    
 
 
 }

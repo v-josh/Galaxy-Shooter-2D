@@ -1175,12 +1175,14 @@ MonoBehaviour:
   _enemyPrefab: {fileID: 703532724131964089, guid: b030dda6960ae4746878c54e0cb064c8,
     type: 3}
   _enemyContainer: {fileID: 2112274549}
+  _delaySpawn: 20
   _powerUps:
   - {fileID: 8208565317594316654, guid: ddcb448b3c1dde940bd8e5350ab25c45, type: 3}
   - {fileID: 4469557635891370793, guid: b4430074ae8b44d4eae89a7a552ddec0, type: 3}
   - {fileID: 5323736385438849255, guid: bca945f2eaab62e4eaf8961a4a4bedeb, type: 3}
   - {fileID: 3712144111394421484, guid: 2a60878d85575de418f1744434af7f06, type: 3}
   - {fileID: 469767179675274453, guid: 5579b6a8091d20845ad3041b8dbf5e07, type: 3}
+  - {fileID: 5544630271246928640, guid: de7d065fb2bd85b4da74a13c34238463, type: 3}
 --- !u!4 &740625445
 Transform:
   m_ObjectHideFlags: 0
@@ -2108,6 +2110,8 @@ MonoBehaviour:
   _accelerationRate: 1
   _maxAcceleration: 4
   _ammoEmpty: {fileID: 8300000, guid: 7c56af132168faa4094055c46de9ecb0, type: 3}
+  _weaponFireworks: {fileID: 2251704404946140271, guid: bb511756ddea8054788876289fcf1dea,
+    type: 3}
 --- !u!212 &1921257516
 SpriteRenderer:
   m_ObjectHideFlags: 0

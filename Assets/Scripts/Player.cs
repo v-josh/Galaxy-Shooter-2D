@@ -74,6 +74,10 @@ public class Player : MonoBehaviour
     [SerializeField]
     private AudioClip _ammoEmpty;
 
+    [Header("Fireworks: Secondary Weapon")]
+    [SerializeField]
+    private GameObject _weaponFireworks;
+
 
     //Private Variables
     private float _canFire = -1f;
@@ -96,6 +100,9 @@ public class Player : MonoBehaviour
     //Random Engine
     private int _firstEngine;
     private int _secondEngine;
+
+    //Fireworks show
+    private bool _startFireworks = false;
 
 
     void Start()
@@ -171,7 +178,10 @@ public class Player : MonoBehaviour
         //If the player press the Spacebar AND has surprassed the cooldown timer
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
-            Fire();
+            if (!_startFireworks)
+            {
+                Fire();
+            }
         }
     }
 
@@ -417,6 +427,31 @@ public class Player : MonoBehaviour
                 _engineFire[_secondEngine].SetActive(false);
             }
         }
+    }
+
+    public void Fireworks()
+    {
+        _startFireworks = true;
+        StartCoroutine(TheFireworksShow());
+        StartCoroutine(StopFireworks());
+    }
+
+    IEnumerator TheFireworksShow()
+    {
+        
+        while(_startFireworks)
+        {
+            Instantiate(_weaponFireworks, transform.position, Quaternion.identity);
+            yield return new WaitForSeconds(0.5f);
+            
+        }
+    }
+
+    IEnumerator StopFireworks()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _startFireworks = false;
+        StopCoroutine(TheFireworksShow());
     }
 
 }
