@@ -42,6 +42,13 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Text _ammoText;
 
+    [Header("Collection Pickup Bar")]
+    [SerializeField]
+    private Text _collectorText;
+
+    [SerializeField]
+    private Slider _collectionBar;
+
 
     //Private Variables
     private GameManager _gm;
@@ -102,6 +109,18 @@ public class UIManager : MonoBehaviour
     {
         _thrustText.text = t;
     }
+
+
+    public void CollectionUI(float x)
+    {
+        _collectionBar.value = x;
+    }
+
+    public void CollectionText(string t)
+    {
+        _collectorText.text = t;
+    }
+
 
     public void AmmoText(int i)
     {

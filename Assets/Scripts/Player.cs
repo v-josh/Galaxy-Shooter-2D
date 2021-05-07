@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -79,6 +79,7 @@ public class Player : MonoBehaviour
     private GameObject _weaponFireworks;
 
 
+
     //Private Variables
     private float _canFire = -1f;
     private SpawnManager _spwScr;
@@ -103,6 +104,12 @@ public class Player : MonoBehaviour
 
     //Fireworks show
     private bool _startFireworks = false;
+
+    //Pickup Collection
+    private bool _collectionCooldown = false;
+    private float _collectionInitialAcceleration = 1.0f;
+    private float _maxCollectionAcceleration = 4.0f;
+    private float _colAcceleration = 1.0f;
 
 
     void Start()
@@ -145,6 +152,7 @@ public class Player : MonoBehaviour
 
         _sourcePlayer = GetComponent<AudioSource>();
         _initialAcceleration = _accelerationRate;
+        _collectionInitialAcceleration = _colAcceleration;
 
         _rendShield = _shieldChild.GetComponent<Renderer>();
         if (_rendShield == null)
@@ -174,6 +182,8 @@ public class Player : MonoBehaviour
         //Player Movement
         
         CalculateMovement();
+
+        CollectionPickup();
 
         //If the player press the Spacebar AND has surprassed the cooldown timer
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
@@ -452,6 +462,53 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(5.0f);
         _startFireworks = false;
         StopCoroutine(TheFireworksShow());
+    }
+
+    void CollectionPickup()
+    {
+        if (Input.GetKey(KeyCode.C) && !_collectionCooldown)
+        {
+            if (_colAcceleration < _maxCollectionAcceleration)
+            {
+                _colAcceleration += (_colAcceleration * Time.deltaTime);
+                _uiManager.CollectionText("Using");
+            }
+            else
+            {
+                _collectionCooldown = true;
+            }
+        }
+        else if (Input.GetKeyUp(KeyCode.C) || _colAcceleration > _collectionInitialAcceleration)
+        {
+            _colAcceleration -= (_collectionInitialAcceleration * Time.deltaTime);
+            if (!_collectionCooldown)
+            {
+                _uiManager.CollectionText("Releasing");
+            }
+            else
+            {
+                _uiManager.CollectionText("RECHARGING");
+            }
+        }
+
+        if (_colAcceleration > _maxCollectionAcceleration)
+        {
+            _colAcceleration = _maxCollectionAcceleration;
+        }
+        else if (_colAcceleration < _collectionInitialAcceleration)
+        {
+            _colAcceleration = _collectionInitialAcceleration;
+            _uiManager.CollectionText("Ready");
+            _collectionCooldown = false;
+        }
+
+        _uiManager.CollectionUI(_colAcceleration);
+
+    }
+
+    public bool CollectingPickups()
+    {
+        return _collectionCooldown;
     }
 
 }

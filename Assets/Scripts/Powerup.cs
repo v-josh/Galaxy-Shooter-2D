@@ -19,7 +19,11 @@ public class Powerup : MonoBehaviour
 
     [SerializeField]
     private PowerType _powerUpType;
-    
+
+
+    [SerializeField]
+    private GameObject _thePlayer;
+    private Player _pS;
     
     
 
@@ -27,17 +31,32 @@ public class Powerup : MonoBehaviour
     void Start()
     {
         _selectedType = (int)_powerUpType;
+
+        if(!_thePlayer)
+        {
+            _thePlayer = GameObject.FindGameObjectWithTag("Player");
+            _pS = _thePlayer.GetComponent<Player>();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         transform.Translate(Vector3.down * Time.deltaTime * _fallSpeed);
+
+        if(Input.GetKey(KeyCode.C) && !_pS.CollectingPickups())
+        {
+            transform.position = Vector2.MoveTowards(transform.position, _thePlayer.transform.position, _fallSpeed * Time.deltaTime);
+
+        }
+
+
         if(transform.position.y <= -4.5f)
         {
             
             Destroy(this.gameObject);
         }
+
         
     }
 
