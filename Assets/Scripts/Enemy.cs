@@ -14,6 +14,9 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private GameObject _enemyLaser;
 
+    [SerializeField]
+    private GameObject _enemyShield;
+
 
     //Private Variables
     private GameObject _thePlayer;
@@ -23,6 +26,7 @@ public class Enemy : MonoBehaviour
 
     private float _fireRate = 3.0f;
     private float _canFire = -1;
+    private bool _activateShield = false;
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +43,27 @@ public class Enemy : MonoBehaviour
 
         _enemyAnim = GetComponent<Animator>();
         _sourceEnemy = GetComponent<AudioSource>();
+
+        if (_enemyShield == null)
+        {
+            _enemyShield = this.transform.GetChild(0).gameObject;
+            //_enemyShield.SetActive(false);
+        }
+
+
+
+        if(Random.value > 0.75f)
+        {
+            _activateShield = true;
+            _enemyShield.SetActive(true);
+        }
+        else
+        {
+            _activateShield = false;
+            _enemyShield.SetActive(false);
+        }
+
+
     }
 
     // Update is called once per frame
@@ -91,21 +116,38 @@ public class Enemy : MonoBehaviour
             //Combining the lines from above, but no null check
             //other.transform.GetComponent<Player>().Damage();
 
-            _enemyAnim.SetTrigger("OnEnemyDeath");
-            _enemySpeed = 0f;
-            _sourceEnemy.Play();
-            Destroy(this.gameObject, 2.3f);
+            if (!_activateShield)
+            {
+                _enemyAnim.SetTrigger("OnEnemyDeath");
+                _enemySpeed = 0f;
+                _sourceEnemy.Play();
+                Destroy(this.gameObject, 2.3f);
+            }
+            else
+            {
+                _activateShield = false;
+                _enemyShield.SetActive(false);
+            }
         }
         else if (other.tag == "Laser")
         {
-            Destroy(other.gameObject);
-            _playerScript.AddToScore(_enemyScore);
+            if (!_activateShield)
+            {
+                Destroy(other.gameObject);
+                _playerScript.AddToScore(_enemyScore);
 
-            _enemySpeed = 0f;
-            _enemyAnim.SetTrigger("OnEnemyDeath");
-            _sourceEnemy.Play();
-            Destroy(GetComponent<Collider2D>());
-            Destroy(this.gameObject, 2.3f);
+                _enemySpeed = 0f;
+                _enemyAnim.SetTrigger("OnEnemyDeath");
+                _sourceEnemy.Play();
+                Destroy(GetComponent<Collider2D>());
+                Destroy(this.gameObject, 2.3f);
+            }
+            else
+            {
+                Destroy(other.gameObject);
+                _activateShield = false;
+                _enemyShield.SetActive(false);
+            }
         }
     }
 }
