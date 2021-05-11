@@ -31,12 +31,13 @@ public class Powerup : MonoBehaviour
     void Start()
     {
         _selectedType = (int)_powerUpType;
-
+        
         if(!_thePlayer)
         {
             _thePlayer = GameObject.FindGameObjectWithTag("Player");
             _pS = _thePlayer.GetComponent<Player>();
         }
+        
     }
 
     // Update is called once per frame
@@ -95,6 +96,10 @@ public class Powerup : MonoBehaviour
             }
             Destroy(this.gameObject);
 
+        }
+        else if(collision.gameObject.tag == "EnemyLaser")
+        {
+            Destroy(this.gameObject);
         }
     }
 

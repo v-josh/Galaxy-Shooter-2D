@@ -28,9 +28,13 @@ public class Enemy : MonoBehaviour
     private float _canFire = -1;
     private bool _activateShield = false;
 
+    private float _powerFire = -1;
+    
+
     // Start is called before the first frame update
     void Start()
     {
+        
         if (!_thePlayer)
         {
             _thePlayer = GameObject.FindGameObjectWithTag("Player");
@@ -40,6 +44,7 @@ public class Enemy : MonoBehaviour
         {
             _playerScript = _thePlayer.GetComponent<Player>();
         }
+        
 
         _enemyAnim = GetComponent<Animator>();
         _sourceEnemy = GetComponent<AudioSource>();
@@ -63,6 +68,25 @@ public class Enemy : MonoBehaviour
             _enemyShield.SetActive(false);
         }
 
+        Physics2D.queriesStartInColliders = false;
+
+    }
+
+
+    private void FixedUpdate()
+    {
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down);
+
+        if (hit.collider != null && hit.collider.tag ==  "Powerup")
+        {
+            Debug.Log("Hitting " + hit.collider.name + "!, Launching Laser");
+            if(Time.time > _powerFire)
+            {
+                EnemyFire(false);
+            }
+
+        }
 
     }
 
@@ -73,23 +97,39 @@ public class Enemy : MonoBehaviour
 
         if(Time.time > _canFire)
         {
-            EnemyFire();
+            EnemyFire(true);
         }
 
 
     }
 
-    void EnemyFire()
+    void EnemyFire(bool _fromUpdate)
     {
-        _fireRate = Random.Range(3f, 7f);
-        _canFire = Time.time + _fireRate;
-        GameObject enemyLaser = Instantiate(_enemyLaser, transform.position, Quaternion.identity);
-        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-        for (int i = 0; i < lasers.Length; i++)
+        if (_fromUpdate)
         {
-            lasers[i].AssignEnemyLaser();
+            _fireRate = Random.Range(3f, 7f);
+            _canFire = Time.time + _fireRate;
+            GameObject enemyLaser = Instantiate(_enemyLaser, transform.position, Quaternion.identity);
+            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+            for (int i = 0; i < lasers.Length; i++)
+            {
+                lasers[i].AssignEnemyLaser();
+            }
+        }
+        else
+        {
+            _fireRate = Random.Range(0f, 2f);
+            _powerFire = Time.time + _fireRate;
+            GameObject enemyLaser = Instantiate(_enemyLaser, transform.position, Quaternion.identity);
+            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+            for (int i = 0; i < lasers.Length; i++)
+            {
+                lasers[i].AssignEnemyLaser();
+            }
+
         }
     }
+
 
 
     void CalculateMovement()

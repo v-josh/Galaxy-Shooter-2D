@@ -174,7 +174,18 @@ public class Player : MonoBehaviour
         {
             _secondEngine = 0;
         }
+
+        for(int i = 0; i < _engineFire.Count; i++)
+        {
+            _engineFire[i].SetActive(false);
+        }
+
     }
+
+
+
+
+
 
     // Update is called once per frame
     void Update()
