@@ -5,7 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
-    enum EnemyMovement { None = 0, Default = 1, ZigZag = 2, Rotate = 3 };
+    enum EnemyMovement { None = 0, Default = 1, ZigZag = 2, Rotate = 3, Side = 4, };
     private int _movementChoice;
 
     [SerializeField]
@@ -41,9 +41,13 @@ public class Enemy : MonoBehaviour
     private float _powerFire = -1;
 
 
-
+    //Rotation
     private float _angle = 0f;
     private float _xAngle, _yAngle = 0f;
+
+    //Side to Side
+    private bool _selectedSide = false;
+    private string _theSide = "";
     
 
     // Start is called before the first frame update
@@ -96,7 +100,7 @@ public class Enemy : MonoBehaviour
 
         if (hit.collider != null && hit.collider.tag ==  "Powerup")
         {
-            Debug.Log("Hitting " + hit.collider.name + "!, Launching Laser");
+            //Debug.Log("Hitting " + hit.collider.name + "!, Launching Laser");
             if(Time.time > _powerFire)
             {
                 EnemyFire(false);
@@ -162,6 +166,9 @@ public class Enemy : MonoBehaviour
             case 3:     //Rotate
                 _isRotation = true;
                 RotateMovement();
+                break;
+            case 4:     //Side to Side
+                SideMovement();
                 break;
             default:
                 break;
@@ -252,6 +259,60 @@ public class Enemy : MonoBehaviour
 
 
 
+    }
+
+    void SideMovement()
+    {
+        
+        if(!_selectedSide)
+        {
+            if(Random.value < 0.5f)
+            {
+                _theSide = "left";
+                _selectedSide = true;
+            }
+            else
+            {
+                _theSide = "right";
+                _selectedSide = true;
+            }
+        }
+        else
+        {
+
+            if(_theSide == "left")
+            {
+                SideLeft();
+
+            }
+            else
+            {
+                SideRight();
+            }
+        }
+        
+    }
+
+    void SideLeft()
+    {
+        transform.rotation = Quaternion.identity;
+        transform.Translate(Vector3.left * Time.deltaTime * _enemySpeed);
+
+        if (transform.position.x < -12)
+        {
+            transform.position = new Vector3(12f, Random.Range(-4f, 4f), 0f);
+        }
+    }
+
+    void SideRight()
+    {
+        transform.rotation = Quaternion.identity;
+        transform.Translate(Vector3.right * Time.deltaTime * _enemySpeed);
+
+        if (transform.position.x > 12)
+        {
+            transform.position = new Vector3(-12f, Random.Range(-4f, 4f), 0f);
+        }
     }
 }
 
