@@ -5,6 +5,12 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
+    enum EnemyMovement { None = 0, Default = 1, ZigZag = 2, Rotate = 3 };
+    private int _movementChoice;
+
+    [SerializeField]
+    private EnemyMovement _enemyMovement;
+
     [SerializeField]
     private float _enemySpeed = 4.0f;
 
@@ -16,6 +22,10 @@ public class Enemy : MonoBehaviour
 
     [SerializeField]
     private GameObject _enemyShield;
+
+    [SerializeField]
+    private bool _isRotation = false;
+
 
 
     //Private Variables
@@ -29,11 +39,18 @@ public class Enemy : MonoBehaviour
     private bool _activateShield = false;
 
     private float _powerFire = -1;
+
+
+
+    private float _angle = 0f;
+    private float _xAngle, _yAngle = 0f;
     
 
     // Start is called before the first frame update
     void Start()
     {
+
+        _movementChoice = (int)_enemyMovement;
         
         if (!_thePlayer)
         {
@@ -75,7 +92,6 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down);
 
         if (hit.collider != null && hit.collider.tag ==  "Powerup")
@@ -134,11 +150,21 @@ public class Enemy : MonoBehaviour
 
     void CalculateMovement()
     {
-        transform.Translate(Vector3.down * Time.deltaTime * _enemySpeed);
-
-        if (transform.position.y <= -5f)
+        switch(_movementChoice)
         {
-            transform.position = new Vector3(Random.Range(-10, 10), 7f, 0f);
+            case 0: //No Movement
+                break;
+            case 1:   //Default movement
+                DefaultMovement();
+                break;
+            case 2:   //Zig Zag
+                break;
+            case 3:     //Rotate
+                _isRotation = true;
+                RotateMovement();
+                break;
+            default:
+                break;
         }
     }
 
@@ -189,6 +215,43 @@ public class Enemy : MonoBehaviour
                 _enemyShield.SetActive(false);
             }
         }
+    }
+
+    void DefaultMovement()
+    {
+       transform.rotation = Quaternion.identity;
+        
+        transform.Translate(Vector3.down * Time.deltaTime * _enemySpeed);
+
+        if (transform.position.y <= -5f && !_isRotation)
+        {
+            transform.position = new Vector3(Random.Range(-10, 10), 7f, 0f);
+        }
+    }
+
+    void RotateMovement()
+    {
+        //DefaultMovement();
+
+
+        //_xAngle = 20f * Mathf.Cos(_angle) * Time.deltaTime;
+        //_yAngle = 20f * Mathf.Sin(_angle) * Time.deltaTime;
+        //transform.position = new Vector3(_xAngle + transform.parent.position.x, _yAngle + transform.parent.position.y, 0f);
+        //transform.position = new Vector2(_xAngle, _yAngle) * _angle * Time.deltaTime;
+        //Debug.Log("Y is: " + y);
+        //_angle += 20  * Time.deltaTime * Mathf.Rad2Deg;
+        
+        
+        //_angle += (_enemySpeed / (20f * 2f * Mathf.PI)) * Time.deltaTime;
+        //transform.position = new Vector3(_xAngle, _yAngle, 0f);
+
+        //transform.Rotate(new Vector3(_xAngle, _yAngle, 0f), _angle);
+        
+        
+        transform.RotateAround(transform.parent.position, Vector3.forward, Time.deltaTime * 360f);
+
+
+
     }
 }
 

@@ -9,7 +9,9 @@ public class SpawnManager : MonoBehaviour
     private float _enemySpawnTime = 5.0f;
 
     [SerializeField]
-    private GameObject _enemyPrefab;
+    //private GameObject _enemyPrefab;
+
+    private GameObject[] _enemyPrefab;
 
     [SerializeField]
     private GameObject _enemyContainer;
@@ -68,9 +70,10 @@ public class SpawnManager : MonoBehaviour
 
         while (!_stopSpawning)
         {
+            int randomGenerator = Random.Range(0, _enemyPrefab.Length);
             //Generate an enemy at a Random number between -8 and 8 on the X axis, 7 on the Y, and 0 at Z
             //The rotation of the clone is the same as the original and attach it to the Enemy Container
-            Instantiate(_enemyPrefab, new Vector3(Random.Range(-8, 8), 7f, 0f), Quaternion.identity, _enemyContainer.transform);
+            Instantiate(_enemyPrefab[randomGenerator], new Vector3(Random.Range(-8, 8), 7f, 0f), Quaternion.identity, _enemyContainer.transform);
             yield return new WaitForSeconds(_enemySpawnTime);  
         }
     }

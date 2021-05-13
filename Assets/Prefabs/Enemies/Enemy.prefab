@@ -49,11 +49,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 963c76236922c0540b38c23457958d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemyMovement: 1
   _enemySpeed: 4
   _enemyScore: 10
   _enemyLaser: {fileID: 5715947078765889363, guid: fc9651065ea69e943b67238aa84c3fcc,
     type: 3}
   _enemyShield: {fileID: 5375451145634653206}
+  _isRotation: 0
 --- !u!212 &1908821341979730347
 SpriteRenderer:
   m_ObjectHideFlags: 0
