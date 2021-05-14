@@ -5,7 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
-    enum EnemyMovement { None = 0, Default = 1, ZigZag = 2, Rotate = 3, Side = 4, };
+    enum EnemyMovement { None = 0, Default = 1, ZigZag = 2, Rotate = 3, Side = 4, Ram = 5 };
     private int _movementChoice;
 
     [SerializeField]
@@ -170,6 +170,9 @@ public class Enemy : MonoBehaviour
             case 4:     //Side to Side
                 SideMovement();
                 break;
+            case 5:     //Ram
+                Ramming();
+                break;
             default:
                 break;
         }
@@ -314,5 +317,21 @@ public class Enemy : MonoBehaviour
             transform.position = new Vector3(-12f, Random.Range(-4f, 4f), 0f);
         }
     }
+
+    void Ramming()
+    {
+        if(Vector3.Distance(transform.position, _thePlayer.transform.position) < 3f)
+        {
+            //transform.Translate()
+            transform.position = Vector3.MoveTowards(transform.position, _thePlayer.transform.position, _enemySpeed * Time.deltaTime);
+        }
+        else
+        {
+            DefaultMovement();
+
+        }
+    }
+
+
 }
 
