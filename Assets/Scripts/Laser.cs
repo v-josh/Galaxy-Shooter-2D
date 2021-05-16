@@ -12,6 +12,11 @@ public class Laser : MonoBehaviour
     private bool _isEnemyLaser = false;
 
     [SerializeField]
+    private bool _enemyFireUp = false;
+
+    
+
+    [SerializeField]
     private bool _isFireworks = false;
 
     void Update()
@@ -29,7 +34,14 @@ public class Laser : MonoBehaviour
         }
         else
         {
-            EnemyLaser();
+            if (!_enemyFireUp)
+            {
+                EnemyLaser();
+            }
+            else
+            {
+                PlayerLaser();
+            }
         }
 
     }

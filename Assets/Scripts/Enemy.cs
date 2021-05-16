@@ -21,7 +21,12 @@ public class Enemy : MonoBehaviour
     private GameObject _enemyLaser;
 
     [SerializeField]
+    private GameObject _enemySingleLaser;
+
+    [SerializeField]
     private GameObject _enemyShield;
+
+
 
     [SerializeField]
     private bool _isRotation = false;
@@ -41,13 +46,15 @@ public class Enemy : MonoBehaviour
     private float _powerFire = -1;
 
 
-    //Rotation
-    private float _angle = 0f;
-    private float _xAngle, _yAngle = 0f;
 
     //Side to Side
     private bool _selectedSide = false;
     private string _theSide = "";
+    private int _sideNumber = 0;
+
+    //Fire Upside
+    private bool _fireUp = false;
+    private float _upFire = -1f;
     
 
     // Start is called before the first frame update
@@ -96,15 +103,22 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down);
+        RaycastHit2D hit_down = Physics2D.Raycast(transform.position, Vector2.down, 10f);
+        RaycastHit2D hit_up = Physics2D.Raycast(transform.position, Vector2.up, 10f);
 
-        if (hit.collider != null && hit.collider.tag ==  "Powerup")
+        if (hit_down.collider != null && hit_down.collider.tag ==  "Powerup")
         {
             //Debug.Log("Hitting " + hit.collider.name + "!, Launching Laser");
             if(Time.time > _powerFire)
             {
                 EnemyFire(false);
             }
+
+        }
+
+        if (hit_up.collider != null && hit_up.collider.tag == "Player")
+        {
+            FireUp();
 
         }
 
@@ -123,31 +137,85 @@ public class Enemy : MonoBehaviour
 
     }
 
+
+
+
+
     void EnemyFire(bool _fromUpdate)
     {
         if (_fromUpdate)
         {
             _fireRate = Random.Range(3f, 7f);
             _canFire = Time.time + _fireRate;
+
+            /*
             GameObject enemyLaser = Instantiate(_enemyLaser, transform.position, Quaternion.identity);
             Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
             for (int i = 0; i < lasers.Length; i++)
             {
                 lasers[i].AssignEnemyLaser();
             }
+            */
+            CreateLasers();
+
         }
         else
         {
             _fireRate = Random.Range(0f, 2f);
             _powerFire = Time.time + _fireRate;
+
+            /*
             GameObject enemyLaser = Instantiate(_enemyLaser, transform.position, Quaternion.identity);
             Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
             for (int i = 0; i < lasers.Length; i++)
             {
                 lasers[i].AssignEnemyLaser();
             }
+            */
+            CreateLasers();
 
         }
+    }
+
+    void CreateLasers()
+    {
+        GameObject enemyLaser = null;
+        if (!_fireUp)
+        {
+            enemyLaser = Instantiate(_enemyLaser, transform.position, Quaternion.identity);
+
+        }
+        else
+        {
+            enemyLaser = Instantiate(_enemySingleLaser, transform.position, Quaternion.identity);
+        }
+
+        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+        for (int i = 0; i < lasers.Length; i++)
+        {
+            lasers[i].AssignEnemyLaser();
+        }
+    }
+
+    void FireUp()
+    {
+        if (Time.time > _upFire)
+        {
+            float ranUp = Random.Range(0f, 1f);
+            _upFire = Time.time + ranUp;
+
+            _fireUp = true;
+            CreateLasers();
+            _fireUp = false;
+        }
+        /*
+        GameObject enemyLaser = Instantiate(_enemySingleLaser, transform.position, Quaternion.identity);
+        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+        for (int i = 0; i < lasers.Length; i++)
+        {
+            lasers[i].AssignEnemyLaser();
+        }
+        */
     }
 
 
@@ -298,6 +366,7 @@ public class Enemy : MonoBehaviour
 
     void SideLeft()
     {
+        _sideNumber = -1;
         transform.rotation = Quaternion.identity;
         transform.Translate(Vector3.left * Time.deltaTime * _enemySpeed);
 
@@ -309,6 +378,7 @@ public class Enemy : MonoBehaviour
 
     void SideRight()
     {
+        _sideNumber = -2;
         transform.rotation = Quaternion.identity;
         transform.Translate(Vector3.right * Time.deltaTime * _enemySpeed);
 
@@ -318,19 +388,37 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void Ramming()
+    public int TheMovement()
     {
-        if(Vector3.Distance(transform.position, _thePlayer.transform.position) < 3f)
+        int numberGet = 0;
+        if (_sideNumber < 0)
         {
-            //transform.Translate()
-            transform.position = Vector3.MoveTowards(transform.position, _thePlayer.transform.position, _enemySpeed * Time.deltaTime);
+            numberGet = _movementChoice;
         }
         else
         {
-            DefaultMovement();
+            numberGet = _sideNumber;
+        }
+
+        return numberGet;
+    }
+
+    void Ramming()
+    {
+        DefaultMovement();
+
+        if (GameObject.FindGameObjectWithTag("Player") != null)
+        {
+            if (Vector3.Distance(transform.position, _thePlayer.transform.position) < 3f)
+            {
+                //transform.Translate()
+                transform.position = Vector3.MoveTowards(transform.position, _thePlayer.transform.position, _enemySpeed * Time.deltaTime);
+            }
 
         }
     }
+
+
 
 
 }

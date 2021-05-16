@@ -54,6 +54,8 @@ MonoBehaviour:
   _enemyScore: 10
   _enemyLaser: {fileID: 5715947078765889363, guid: fc9651065ea69e943b67238aa84c3fcc,
     type: 3}
+  _enemySingleLaser: {fileID: 5808190268609181652, guid: 96b13fce3a5fbe44bba29ecbd3c6591a,
+    type: 3}
   _enemyShield: {fileID: 5375451145634653206}
   _isRotation: 0
 --- !u!212 &1908821341979730347
