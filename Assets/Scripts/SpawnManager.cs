@@ -12,6 +12,9 @@ public class SpawnManager : MonoBehaviour
     private GameObject[] _enemyPrefab;
 
     [SerializeField]
+    private float[] _enemyProbability;
+
+    [SerializeField]
     private GameObject _enemyContainer;
 
     [SerializeField]
@@ -33,7 +36,7 @@ public class SpawnManager : MonoBehaviour
 
     //Private Variables
     private bool _stopSpawning = false;
-    private float _canSpawn = -1f;
+    private bool _enemySpin = true;
     private bool _randomSpin = true;
     private int _theRandomNumber;
 
@@ -52,7 +55,7 @@ public class SpawnManager : MonoBehaviour
 
         if (_enemyPrefab != null)
         {
-            //StartCoroutine(SpawnEnemyRoutine());
+            StartCoroutine(SpawnEnemyRoutine());
         }
 
         StartCoroutine(SpawnPowerupRoutine());
@@ -76,7 +79,24 @@ public class SpawnManager : MonoBehaviour
         while (!_stopSpawning)
         {
             int randomGenerator = Random.Range(0, _enemyPrefab.Length);
-            //randomGenerator = 3;
+            while(_enemySpin)
+            {
+                float enemyRandom = Random.value;
+                float enemyValue = _enemyProbability[randomGenerator];
+                //Debug.Log("Picked " + enemyRandom + " While probability at: " + (1f- enemyValue));
+                if(enemyRandom > (1f - enemyValue))
+                {
+                    _enemySpin = false;
+                }
+                else
+                {
+                    randomGenerator = Random.Range(0, _enemyPrefab.Length);
+                }
+            }
+
+
+
+
             Enemy eScript = _enemyPrefab[randomGenerator].GetComponent<Enemy>();
             int movementNumber = eScript.TheMovement();
 
@@ -96,6 +116,7 @@ public class SpawnManager : MonoBehaviour
                 Instantiate(_enemyPrefab[randomGenerator], new Vector3(12f, Random.Range(-4f, 4f)), Quaternion.identity, _enemyContainer.transform);
 
             }
+            _enemySpin = true;
             yield return new WaitForSeconds(_enemySpawnTime);  
         }
     }
@@ -111,24 +132,9 @@ public class SpawnManager : MonoBehaviour
 
             Vector3 postSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);
 
-            /*
-            if(_theRandomNumber == 5)
-            {
-                _randomSpin = true;
-            }
-            else
-            {
-                _randomSpin = false;
-            }
-            */
-
             //Decreasing the spawn of the secondary weapon
             while (_randomSpin)
             {
-                
-
-                
-
                 float randomValue = Random.value;
 
                 float probValue = _powerUpProbability[_theRandomNumber];
@@ -137,7 +143,7 @@ public class SpawnManager : MonoBehaviour
                 {
                     case 3:
                         probValue += _ammoOdds;
-                        Debug.Log("Ammo Probability: " + probValue + "  _ammoOdds: " + _ammoOdds + " RandomValue at: " + randomValue);
+
                         if(probValue > 1f)
                         {
                             probValue = 1f;
@@ -164,8 +170,6 @@ public class SpawnManager : MonoBehaviour
                         break;
                 }
 
-                //Debug.Log("Power up is: " + _powerUps[_theRandomNumber].gameObject.name + " while the Probability is: " + randomValue + " w/ the odds at: " + (1f -probValue) );
-
                 if (randomValue > (1f - probValue) )
                 {
                     _randomSpin = false;
@@ -175,26 +179,6 @@ public class SpawnManager : MonoBehaviour
                     _theRandomNumber = Random.Range(0, _powerUps.Length);
                     yield return new WaitForSeconds(0.1f);
                 }
-
-                /*
-                if (_theRandomNumber == 5)
-                {
-                    if (Time.time >= _canSpawn)
-                    {
-                        _canSpawn = Time.time + _delaySpawn;
-                        _randomSpin = false;
-                    }
-                    else
-                    {
-                        _theRandomNumber = Random.Range(0, _powerUps.Length);
-                    }
-                }
-                else
-                {
-                    _randomSpin = false;
-                }
-                */
-
             }
             
 

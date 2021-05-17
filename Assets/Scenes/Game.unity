@@ -1383,6 +1383,13 @@ MonoBehaviour:
   - {fileID: 8072748176993377516, guid: b9e3011db1531d94d9f22eceec6cb117, type: 3}
   - {fileID: 2392288753235763432, guid: 49eeb70f767436645b46d74d5d3cb712, type: 3}
   - {fileID: 6672917787132790934, guid: 36334706ce7536149a084a55e989b04d, type: 3}
+  - {fileID: 1611898104760990968, guid: c69a167b1aa4d6f44a5a519a9358adf8, type: 3}
+  _enemyProbability:
+  - 1
+  - 0.4
+  - 0.2
+  - 0.15
+  - 0.3
   _enemyContainer: {fileID: 2112274549}
   _delaySpawn: 20
   _powerUps:
@@ -2767,7 +2774,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2040927134}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!20 &2040927136
 Camera:
   m_ObjectHideFlags: 0

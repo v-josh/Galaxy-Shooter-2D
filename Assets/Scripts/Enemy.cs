@@ -45,6 +45,7 @@ public class Enemy : MonoBehaviour
     private float _fireRate = 3.0f;
     private float _canFire = -1;
     private bool _activateShield = false;
+    private bool _stillAlive = true;
 
     private float _powerFire = -1;
 
@@ -113,7 +114,7 @@ public class Enemy : MonoBehaviour
 
         if (hit_down.collider != null && hit_down.collider.tag ==  "Powerup")
         {
-            if(Time.time > _powerFire)
+            if(Time.time > _powerFire && _stillAlive)
             {
                 EnemyFire(false);
             }
@@ -151,7 +152,7 @@ public class Enemy : MonoBehaviour
     {
         CalculateMovement();
 
-        if(Time.time > _canFire)
+        if(Time.time > _canFire && _stillAlive)
         {
             EnemyFire(true);
         }
@@ -163,7 +164,7 @@ public class Enemy : MonoBehaviour
     {
         if (_fromUpdate)
         {
-            _fireRate = Random.Range(3f, 7f);
+            _fireRate = Random.Range(2f, 6f);
             _canFire = Time.time + _fireRate;
 
             /*
@@ -287,6 +288,7 @@ public class Enemy : MonoBehaviour
 
             if (!_activateShield)
             {
+                _stillAlive = false;
                 _enemyAnim.SetTrigger("OnEnemyDeath");
                 _enemySpeed = 0f;
                 _sourceEnemy.Play();
@@ -302,6 +304,8 @@ public class Enemy : MonoBehaviour
         {
             if (!_activateShield)
             {
+                _stillAlive = false;
+
                 Destroy(other.gameObject);
                 _playerScript.AddToScore(_enemyScore);
 
