@@ -36,7 +36,14 @@ public class Laser : MonoBehaviour
         {
             if (!_enemyFireUp)
             {
-                EnemyLaser();
+                if (!_isFireworks)
+                {
+                    EnemyLaser();
+                }
+                else
+                {
+                    Fireworks();
+                }
             }
             else
             {

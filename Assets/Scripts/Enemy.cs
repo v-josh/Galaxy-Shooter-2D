@@ -5,7 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
-    enum EnemyMovement { None = 0, Default = 1, ZigZag = 2, Rotate = 3, Side = 4, Ram = 5 };
+    enum EnemyMovement { None = 0, Default = 1, ZigZag = 2, Rotate = 3, Side = 4, Ram = 5, Mine = 6 };
     private int _movementChoice;
 
     [SerializeField]
@@ -31,6 +31,9 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private bool _isRotation = false;
 
+    [SerializeField]
+    private bool _avoidFire = false;
+
 
 
     //Private Variables
@@ -55,12 +58,14 @@ public class Enemy : MonoBehaviour
     //Fire Upside
     private bool _fireUp = false;
     private float _upFire = -1f;
+
+    //Mine Weapon
+    private bool _mineActivate = false;
     
 
     // Start is called before the first frame update
     void Start()
     {
-
         _movementChoice = (int)_enemyMovement;
         
         if (!_thePlayer)
@@ -108,7 +113,6 @@ public class Enemy : MonoBehaviour
 
         if (hit_down.collider != null && hit_down.collider.tag ==  "Powerup")
         {
-            //Debug.Log("Hitting " + hit.collider.name + "!, Launching Laser");
             if(Time.time > _powerFire)
             {
                 EnemyFire(false);
@@ -122,6 +126,24 @@ public class Enemy : MonoBehaviour
 
         }
 
+
+        if (_avoidFire)
+        {
+            Collider2D fireToAvoid = Physics2D.OverlapCircle(transform.position, 2f);
+
+            if (fireToAvoid != null && fireToAvoid.tag == "Laser")
+            {
+                AvoidFire(fireToAvoid.gameObject);
+            }
+        }
+
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, 1.5f);
+
     }
 
     // Update is called once per frame
@@ -134,11 +156,7 @@ public class Enemy : MonoBehaviour
             EnemyFire(true);
         }
 
-
     }
-
-
-
 
 
     void EnemyFire(bool _fromUpdate)
@@ -190,10 +208,13 @@ public class Enemy : MonoBehaviour
             enemyLaser = Instantiate(_enemySingleLaser, transform.position, Quaternion.identity);
         }
 
-        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-        for (int i = 0; i < lasers.Length; i++)
+        if (!_mineActivate)
         {
-            lasers[i].AssignEnemyLaser();
+            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+            for (int i = 0; i < lasers.Length; i++)
+            {
+                lasers[i].AssignEnemyLaser();
+            }
         }
     }
 
@@ -240,6 +261,10 @@ public class Enemy : MonoBehaviour
                 break;
             case 5:     //Ram
                 Ramming();
+                break;
+            case 6:     //Shooting Mines
+                _mineActivate = true;
+                SideMovement();
                 break;
             default:
                 break;
@@ -324,8 +349,7 @@ public class Enemy : MonoBehaviour
         //transform.position = new Vector3(_xAngle, _yAngle, 0f);
 
         //transform.Rotate(new Vector3(_xAngle, _yAngle, 0f), _angle);
-        
-        
+
         transform.RotateAround(transform.parent.position, Vector3.forward, Time.deltaTime * 360f);
 
 
@@ -418,8 +442,13 @@ public class Enemy : MonoBehaviour
         }
     }
 
-
-
+    void AvoidFire(GameObject avoidThis)
+    {
+        if (Vector3.Distance(transform.position, avoidThis.transform.position) < 3f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, avoidThis.transform.position, -3f * _enemySpeed * Time.deltaTime);
+        }
+    }
 
 }
 

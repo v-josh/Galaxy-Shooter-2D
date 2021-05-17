@@ -291,6 +291,8 @@ public class Player : MonoBehaviour
             if (_ammoCount > 0)
             {
                 _ammoCount--;
+                float theOdds = 1f - (_ammoCount / 15f) ;
+                _spwScr.AmmoOdds(theOdds);
                 Instantiate(_laser, new Vector3(transform.position.x, transform.position.y + 1.05f, transform.position.z), Quaternion.identity);
                 _uiManager.AmmoText(_ammoCount);
             }
@@ -314,6 +316,7 @@ public class Player : MonoBehaviour
         {
             _playerLives--;
             _uiManager.UpdateLives(_playerLives);
+            _spwScr.HealthOdds(0.3f);
             if (_playerLives >= 1)
             {
                 EngineOnFire(true);
@@ -404,6 +407,7 @@ public class Player : MonoBehaviour
         {
             _ammoCount = 15;
             _uiManager.AmmoText(_ammoCount);
+            _spwScr.AmmoOdds(-15f);
         }
     }
 
@@ -414,6 +418,7 @@ public class Player : MonoBehaviour
             _playerLives++;
             _uiManager.UpdateLives(_playerLives);
             EngineOnFire(false);
+            _spwScr.HealthOdds(-0.3f);
         }
     }
 

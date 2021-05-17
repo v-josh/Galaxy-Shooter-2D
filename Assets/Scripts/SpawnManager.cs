@@ -9,8 +9,6 @@ public class SpawnManager : MonoBehaviour
     private float _enemySpawnTime = 5.0f;
 
     [SerializeField]
-    //private GameObject _enemyPrefab;
-
     private GameObject[] _enemyPrefab;
 
     [SerializeField]
@@ -21,6 +19,9 @@ public class SpawnManager : MonoBehaviour
 
     [SerializeField]
     private GameObject[] _powerUps;
+
+    [SerializeField]
+    private float[] _powerUpProbability = new float[10];
 
     /*
     [SerializeField]
@@ -36,6 +37,9 @@ public class SpawnManager : MonoBehaviour
     private bool _randomSpin = true;
     private int _theRandomNumber;
 
+    private float _healthOdds = 0f;
+    private float _ammoOdds = 0f;
+
 
     // Start is called before the first frame update
     void Start()
@@ -45,9 +49,10 @@ public class SpawnManager : MonoBehaviour
 
     public void StartSpawning()
     {
+
         if (_enemyPrefab != null)
         {
-            StartCoroutine(SpawnEnemyRoutine());
+            //StartCoroutine(SpawnEnemyRoutine());
         }
 
         StartCoroutine(SpawnPowerupRoutine());
@@ -71,6 +76,7 @@ public class SpawnManager : MonoBehaviour
         while (!_stopSpawning)
         {
             int randomGenerator = Random.Range(0, _enemyPrefab.Length);
+            //randomGenerator = 3;
             Enemy eScript = _enemyPrefab[randomGenerator].GetComponent<Enemy>();
             int movementNumber = eScript.TheMovement();
 
@@ -102,8 +108,10 @@ public class SpawnManager : MonoBehaviour
         while (_stopSpawning == false)
         {
             _theRandomNumber = Random.Range(0, _powerUps.Length);
+
             Vector3 postSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);
 
+            /*
             if(_theRandomNumber == 5)
             {
                 _randomSpin = true;
@@ -112,12 +120,63 @@ public class SpawnManager : MonoBehaviour
             {
                 _randomSpin = false;
             }
+            */
 
-            
             //Decreasing the spawn of the secondary weapon
             while (_randomSpin)
             {
-                yield return new WaitForSeconds(0.5f);
+                
+
+                
+
+                float randomValue = Random.value;
+
+                float probValue = _powerUpProbability[_theRandomNumber];
+
+                switch (_theRandomNumber)
+                {
+                    case 3:
+                        probValue += _ammoOdds;
+                        Debug.Log("Ammo Probability: " + probValue + "  _ammoOdds: " + _ammoOdds + " RandomValue at: " + randomValue);
+                        if(probValue > 1f)
+                        {
+                            probValue = 1f;
+                        }
+                        else if(probValue < 0f)
+                        {
+                            probValue = _powerUpProbability[_theRandomNumber];
+                        }
+                        break;
+                    case 4:
+                        probValue += _healthOdds;
+
+                        if(probValue > 1f)
+                        {
+                            probValue = 1f;
+                        }
+                        else if(probValue < 0f)
+                        {
+                            probValue = _powerUpProbability[_theRandomNumber];
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+
+                //Debug.Log("Power up is: " + _powerUps[_theRandomNumber].gameObject.name + " while the Probability is: " + randomValue + " w/ the odds at: " + (1f -probValue) );
+
+                if (randomValue > (1f - probValue) )
+                {
+                    _randomSpin = false;
+                }
+                else
+                {
+                    _theRandomNumber = Random.Range(0, _powerUps.Length);
+                    yield return new WaitForSeconds(0.1f);
+                }
+
+                /*
                 if (_theRandomNumber == 5)
                 {
                     if (Time.time >= _canSpawn)
@@ -134,12 +193,14 @@ public class SpawnManager : MonoBehaviour
                 {
                     _randomSpin = false;
                 }
+                */
+
             }
             
 
             //Random Generate Power Ups
             Instantiate(_powerUps[_theRandomNumber], postSpawn, Quaternion.identity);
-
+            _randomSpin = true;
             //Manual Spawning For Testing purposes only
             //Instantiate(_powerUps[0], postSpawn, Quaternion.identity);    //Triple Shot
             //Instantiate(_powerUps[1], postSpawn, Quaternion.identity);    //Speed
@@ -149,6 +210,16 @@ public class SpawnManager : MonoBehaviour
             //Instantiate(_powerUps[5], postSpawn, Quaternion.identity);    //Fireworks
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
+    }
+
+    public void HealthOdds(float f)
+    {
+        _healthOdds = f;
+    }
+
+    public void AmmoOdds(float f)
+    {
+        _ammoOdds = f;
     }
 
 
