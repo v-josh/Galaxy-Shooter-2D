@@ -49,6 +49,19 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Slider _collectionBar;
 
+    [Header("Enemy Waves")]
+    [SerializeField]
+    private Text _waveTextTitle;
+    
+    [SerializeField]
+    private Text _waveText;
+
+    [SerializeField]
+    private Text _enemiesLeftTitle;
+
+    [SerializeField]
+    private Text _enemiesLeftText;
+
 
     //Private Variables
     private GameManager _gm;
@@ -74,11 +87,7 @@ public class UIManager : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
 
-    }
 
     public void UpdateScore(int score)
     {
@@ -91,7 +100,7 @@ public class UIManager : MonoBehaviour
         //_livesImg.sprite = _livesSprite[currentLives];
         if(currentLives >= 0)
         {
-            _livesImg.sprite = _livesSprite[currentLives];
+            //_livesImg.sprite = _livesSprite[currentLives];
         }
         if (currentLives <= 0)
         {
@@ -160,5 +169,24 @@ public class UIManager : MonoBehaviour
         _mainCamera.transform.position = _camPos;
         yield return new WaitForSeconds(0.2f);
         _mainCamera.transform.position = _cameraInitial;
+    }
+
+    public void EnemiesLeft(int _enemiesAmt)
+    {
+        _enemiesLeftText.text = _enemiesAmt.ToString();
+    }
+
+    public void CurrentWave(int _currentWave)
+    {
+        _waveText.text = _currentWave.ToString();
+    }
+    
+    public void ShowWaveInfo()
+    {
+        _enemiesLeftTitle.gameObject.SetActive(true);
+        _enemiesLeftText.gameObject.SetActive(true);
+
+        _waveTextTitle.gameObject.SetActive(true);
+        _waveText.gameObject.SetActive(true);
     }
 }

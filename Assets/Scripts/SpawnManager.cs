@@ -26,6 +26,12 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private float[] _powerUpProbability = new float[10];
 
+    [SerializeField]
+    private int _enemiesWave = 10;
+
+    [SerializeField]
+    private int _enemiesWaveAdditional = 10;
+
     /*
     [SerializeField]
     private GameObject _tripleShotPrefab;
@@ -43,15 +49,37 @@ public class SpawnManager : MonoBehaviour
     private float _healthOdds = 0f;
     private float _ammoOdds = 0f;
 
+    private UIManager _uI;
+    private bool _waveChange = false;
+    private int _enemiesLeft;
+    private int _currentWaves = 1;
+    private int _totalEnemiesSpawn;
+    private bool _waveComplete = false;
+
+    private int _enemiesSpawned = 0;
+
+    
+
 
     // Start is called before the first frame update
     void Start()
     {
+        _enemiesLeft = _enemiesWave;
+        _totalEnemiesSpawn = _enemiesLeft;
+        if (_uI == null)
+        {
+            _uI = GameObject.FindWithTag("UI").GetComponent < UIManager >();
+        }
 
+
+
+        _uI.EnemiesLeft(_enemiesLeft);
+        _uI.CurrentWave(_currentWaves);
     }
 
     public void StartSpawning()
     {
+        _uI.ShowWaveInfo();
 
         if (_enemyPrefab != null)
         {
@@ -59,6 +87,8 @@ public class SpawnManager : MonoBehaviour
         }
 
         StartCoroutine(SpawnPowerupRoutine());
+        //StartCoroutine(WaveChange());
+
     }
 
     // Update is called once per frame
@@ -74,17 +104,21 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator SpawnEnemyRoutine()
     {
-        yield return new WaitForSeconds(3f);
+
+            yield return new WaitForSeconds(3f);
+
 
         while (!_stopSpawning)
         {
+            EnemiesSpawned();
+
             int randomGenerator = Random.Range(0, _enemyPrefab.Length);
-            while(_enemySpin)
+            while (_enemySpin)
             {
                 float enemyRandom = Random.value;
-                float enemyValue = _enemyProbability[randomGenerator];
+                float enemyValue = _enemyProbability[randomGenerator] * _currentWaves;
                 //Debug.Log("Picked " + enemyRandom + " While probability at: " + (1f- enemyValue));
-                if(enemyRandom > (1f - enemyValue))
+                if (enemyRandom > (1f - enemyValue))
                 {
                     _enemySpin = false;
                 }
@@ -94,31 +128,50 @@ public class SpawnManager : MonoBehaviour
                 }
             }
 
-
-
-
             Enemy eScript = _enemyPrefab[randomGenerator].GetComponent<Enemy>();
             int movementNumber = eScript.TheMovement();
 
-            if (movementNumber < 0)
+            if (_waveComplete == false)
             {
+                if (_enemiesLeft > 0)
+                {
+                    if (movementNumber > 0)
+                    {
 
-                //Generate an enemy at a Random number between -8 and 8 on the X axis, 7 on the Y, and 0 at Z
-                //The rotation of the clone is the same as the original and attach it to the Enemy Container
-                Instantiate(_enemyPrefab[randomGenerator], new Vector3(Random.Range(-8, 8), 7f, 0f), Quaternion.identity, _enemyContainer.transform);
-            }
-            else if(movementNumber == -1)
-            {
-                Instantiate(_enemyPrefab[randomGenerator], new Vector3(-12f, Random.Range(-4f, 4f)), Quaternion.identity, _enemyContainer.transform);
+                        //Generate an enemy at a Random number between -8 and 8 on the X axis, 7 on the Y, and 0 at Z
+                        //The rotation of the clone is the same as the original and attach it to the Enemy Container
+                        Instantiate(_enemyPrefab[randomGenerator], new Vector3(Random.Range(-8, 8), 7f, 0f), Quaternion.identity, _enemyContainer.transform);
+                    }
+                    else if (movementNumber == -1)
+                    {
+                        Instantiate(_enemyPrefab[randomGenerator], new Vector3(-12f, Random.Range(-4f, 4f)), Quaternion.identity, _enemyContainer.transform);
+                    }
+                    else
+                    {
+                        Instantiate(_enemyPrefab[randomGenerator], new Vector3(12f, Random.Range(-4f, 4f)), Quaternion.identity, _enemyContainer.transform);
+
+                    }
+                    _enemySpin = true;
+                }
+                else
+                {
+                    //Debug.Log("WaveChange is now at: " + _waveChange);
+                    
+                    //ChangingWave();
+
+                }
             }
             else
             {
-                Instantiate(_enemyPrefab[randomGenerator], new Vector3(12f, Random.Range(-4f, 4f)), Quaternion.identity, _enemyContainer.transform);
-
+                if (_enemiesLeft == 0)
+                {
+                    //Debug.Log("Changing Waves inside CoRoutine");
+                    ChangingWave();
+                }
             }
-            _enemySpin = true;
-            yield return new WaitForSeconds(_enemySpawnTime);  
+            yield return new WaitForSeconds(_enemySpawnTime);
         }
+        
     }
 
     IEnumerator SpawnPowerupRoutine()
@@ -205,6 +258,98 @@ public class SpawnManager : MonoBehaviour
     {
         _ammoOdds = f;
     }
+
+    IEnumerator WaveChange()
+    {
+        //Debug.Log("Inside WaveChange CoRoutine");
+        yield return new WaitForSeconds(5.0f);
+
+        while (_waveChange)
+        {
+            //Debug.Log("Inside WaveChange");
+            _enemiesLeft = _enemiesWave + (_currentWaves * _enemiesWaveAdditional);
+            _totalEnemiesSpawn = _enemiesLeft;
+            _currentWaves++;
+            _uI.EnemiesLeft(_enemiesLeft);
+            _uI.CurrentWave(_currentWaves);
+            _enemiesSpawned = 0;
+            _waveChange = false;
+            _waveComplete = false;
+        }
+
+
+        yield return new WaitForSeconds(1.0f);
+    }
+
+    void ChangingWave()
+    {
+        if (_enemiesLeft == 0)
+        {
+
+            _waveChange = true;
+            //Debug.Log("WaveChange ChangingWave: " + _waveChange);
+
+            StartCoroutine(WaveChange());
+            StopCoroutine(WaveChange());
+
+        }
+    }
+
+    public void EnemiesLeft()
+    {
+
+        if (_enemiesLeft > 0)
+        {
+            _enemiesLeft--;
+            DisplayEnemyLeft();
+
+        }
+        else
+        {
+            //Debug.Log("WaveChange EnemiesLeft: " + _waveChange);
+            //ChangingWave();
+            _waveChange = true;
+           // ChangingWave();
+        }
+    }
+
+    void DisplayEnemyLeft()
+    {
+        _uI.EnemiesLeft(_enemiesLeft);
+    }
+
+
+    void EnemiesSpawned()
+    {
+        if (!_waveComplete)
+        {
+            if (_totalEnemiesSpawn >= 1)
+            {
+                _totalEnemiesSpawn--;
+                _enemiesSpawned++;
+                //Debug.Log("Enemies left: " + _totalEnemiesSpawn + " while Total at: " + _enemiesSpawned);
+            }
+            else
+            {
+                //Debug.Log("WaveChange Inside EnemiesSpawned: " + _waveChange);
+                _waveComplete = true;
+                //_waveChange = true;
+                //_stopSpawning = true;
+            }
+        }
+        else
+        {
+            if(_enemiesLeft < 1)
+            {
+                _waveComplete = true;
+                //Debug.Log("Changing Waves inside Enemies Spawned");
+                //ChangingWave();
+            }
+        }
+    }
+
+
+
 
 
 }

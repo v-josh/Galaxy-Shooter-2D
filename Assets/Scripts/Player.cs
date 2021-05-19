@@ -80,6 +80,9 @@ public class Player : MonoBehaviour
 
 
 
+
+
+
     //Private Variables
     private float _canFire = -1f;
     private SpawnManager _spwScr;
@@ -114,6 +117,8 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+
+        
 
         if(_spwMan != null)
         {
@@ -379,6 +384,7 @@ public class Player : MonoBehaviour
     {
         _scoreTotal += playerScore;
         _uiManager.UpdateScore(_scoreTotal);
+        //_spwScr.EnemiesLeft();
     }
 
     /// START SHIELD HEALTH IMPLEMENTATION
@@ -525,6 +531,11 @@ public class Player : MonoBehaviour
     public bool CollectingPickups()
     {
         return _collectionCooldown;
+    }
+
+    public void SubtractEnemy()
+    {
+        _spwScr.EnemiesLeft();
     }
 
 }

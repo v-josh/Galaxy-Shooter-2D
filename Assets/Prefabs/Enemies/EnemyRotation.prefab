@@ -52,6 +52,7 @@ MonoBehaviour:
   _enemySingleLaser: {fileID: 0}
   _enemyShield: {fileID: 833410858332982747}
   _isRotation: 0
+  _avoidFire: 0
 --- !u!1 &4686468840859755088
 GameObject:
   m_ObjectHideFlags: 0
@@ -64,7 +65,7 @@ GameObject:
   - component: {fileID: 4686468840859755091}
   m_Layer: 0
   m_Name: EnemyRotation
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -106,6 +107,7 @@ MonoBehaviour:
   _enemyShield: {fileID: 1379627869731696074, guid: ee5ac91bae28d0f4f9200b8fcfcfc66a,
     type: 3}
   _isRotation: 0
+  _avoidFire: 0
 --- !u!1001 &4686468841052645837
 PrefabInstance:
   m_ObjectHideFlags: 0

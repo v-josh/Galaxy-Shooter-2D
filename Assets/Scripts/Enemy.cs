@@ -288,6 +288,7 @@ public class Enemy : MonoBehaviour
 
             if (!_activateShield)
             {
+                scrPlayer.SubtractEnemy();
                 _stillAlive = false;
                 _enemyAnim.SetTrigger("OnEnemyDeath");
                 _enemySpeed = 0f;
@@ -298,6 +299,7 @@ public class Enemy : MonoBehaviour
             {
                 _activateShield = false;
                 _enemyShield.SetActive(false);
+
             }
         }
         else if (other.tag == "Laser")
@@ -308,7 +310,7 @@ public class Enemy : MonoBehaviour
 
                 Destroy(other.gameObject);
                 _playerScript.AddToScore(_enemyScore);
-
+                _playerScript.SubtractEnemy();
                 _enemySpeed = 0f;
                 _enemyAnim.SetTrigger("OnEnemyDeath");
                 _sourceEnemy.Play();
