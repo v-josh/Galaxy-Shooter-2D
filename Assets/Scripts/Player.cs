@@ -509,6 +509,13 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void AmmoDrain()
+    {
+        _ammoCount = 0;
+        _uiManager.AmmoText(_ammoCount);
+        _spwScr.AmmoOdds(15f);
+    }
+
     public void HealthRefill()
     {
         if(_playerHealth < _maxHealth)

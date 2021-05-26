@@ -1641,13 +1641,15 @@ MonoBehaviour:
   - {fileID: 3712144111394421484, guid: 2a60878d85575de418f1744434af7f06, type: 3}
   - {fileID: 469767179675274453, guid: 5579b6a8091d20845ad3041b8dbf5e07, type: 3}
   - {fileID: 5544630271246928640, guid: de7d065fb2bd85b4da74a13c34238463, type: 3}
+  - {fileID: 9000180034318217975, guid: d71f0be77a73a6347a234cd4abb957de, type: 3}
   _powerUpProbability:
   - 0.4
   - 0.3
   - 0.3
-  - 0.8
+  - 0.9
   - 0.2
   - 0.05
+  - 1
   _theBoss: {fileID: 227640083329449773, guid: 1f3f77ac6e368de4ea32c528c1eea08a, type: 3}
   _totalEnemyWave: 5
 --- !u!4 &740625445

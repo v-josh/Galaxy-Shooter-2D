@@ -6,7 +6,7 @@ public class Powerup : MonoBehaviour
 {
 
     //Private Variables
-    enum PowerType { tripleShot = 0, speed = 1, shield = 2, ammo = 3, health = 4, fireworks = 5 }
+    enum PowerType { tripleShot = 0, speed = 1, shield = 2, ammo = 3, health = 4, fireworks = 5, drain = 6, rockets = 7 }
     private int _selectedType;
 
     //Serialize Fields
@@ -92,6 +92,11 @@ public class Powerup : MonoBehaviour
                         break;
                     case 5: //Fireworks (secondary weapon)
                         ps.Fireworks();
+                        break;
+                    case 6: //Ammo Drain
+                        ps.AmmoDrain();
+                        break;
+                    case 7: //Rockets
                         break;
                     default:
                         break;

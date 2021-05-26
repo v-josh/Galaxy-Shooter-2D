@@ -246,6 +246,7 @@ public class SpawnManager : MonoBehaviour
             //Instantiate(_powerUps[3], postSpawn, Quaternion.identity);    //Ammo Refill
             //Instantiate(_powerUps[4], postSpawn, Quaternion.identity);    //Health Refill
             //Instantiate(_powerUps[5], postSpawn, Quaternion.identity);    //Fireworks
+            //Instantiate(_powerUps[6], postSpawn, Quaternion.identity);    //Ammo Drain
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
     }
