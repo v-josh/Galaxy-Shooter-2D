@@ -5,6 +5,20 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
 
+    [Header("Enemies Info")]
+
+
+
+
+    [SerializeField]
+    private GameObject _enemyContainer;
+
+    [SerializeField]
+    private int _eneimesToStartWave = 10;
+
+    [SerializeField]
+    private int _additionalEnemiesPerWave = 10;
+
     [SerializeField]
     private float _enemySpawnTime = 5.0f;
 
@@ -14,23 +28,19 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private float[] _enemyProbability;
 
-    [SerializeField]
-    private GameObject _enemyContainer;
-
-    [SerializeField]
-    private float _delaySpawn = 5f;
-
+    [Header("Power Up Info")]
     [SerializeField]
     private GameObject[] _powerUps;
 
     [SerializeField]
     private float[] _powerUpProbability = new float[10];
 
+    [Header("Boss Info")]
     [SerializeField]
-    private int _enemiesWave = 10;
+    private GameObject _theBoss;
 
     [SerializeField]
-    private int _enemiesWaveAdditional = 10;
+    private int _totalEnemyWave = 5;
 
     /*
     [SerializeField]
@@ -57,6 +67,8 @@ public class SpawnManager : MonoBehaviour
     private bool _waveComplete = false;
 
     private int _enemiesSpawned = 0;
+    private bool _spawnBoss = false;
+    private bool _bossSpawned = false;
 
     
 
@@ -64,14 +76,12 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _enemiesLeft = _enemiesWave;
+        _enemiesLeft = _eneimesToStartWave;
         _totalEnemiesSpawn = _enemiesLeft;
         if (_uI == null)
         {
             _uI = GameObject.FindWithTag("UI").GetComponent < UIManager >();
         }
-
-
 
         _uI.EnemiesLeft(_enemiesLeft);
         _uI.CurrentWave(_currentWaves);
@@ -87,15 +97,9 @@ public class SpawnManager : MonoBehaviour
         }
 
         StartCoroutine(SpawnPowerupRoutine());
-        //StartCoroutine(WaveChange());
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void OnPlayerDeath()
     {
@@ -105,11 +109,13 @@ public class SpawnManager : MonoBehaviour
     IEnumerator SpawnEnemyRoutine()
     {
 
-            yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(3f);
 
 
         while (!_stopSpawning)
         {
+
+
             EnemiesSpawned();
 
             int randomGenerator = Random.Range(0, _enemyPrefab.Length);
@@ -135,7 +141,7 @@ public class SpawnManager : MonoBehaviour
             {
                 if (_enemiesLeft > 0)
                 {
-                    if (movementNumber > 0)
+                    if (movementNumber >= 0)
                     {
 
                         //Generate an enemy at a Random number between -8 and 8 on the X axis, 7 on the Y, and 0 at Z
@@ -153,14 +159,8 @@ public class SpawnManager : MonoBehaviour
                     }
                     _enemySpin = true;
                 }
-                else
-                {
-                    //Debug.Log("WaveChange is now at: " + _waveChange);
-                    
-                    //ChangingWave();
-
-                }
             }
+            
             else
             {
                 if (_enemiesLeft == 0)
@@ -169,6 +169,7 @@ public class SpawnManager : MonoBehaviour
                     ChangingWave();
                 }
             }
+            
             yield return new WaitForSeconds(_enemySpawnTime);
         }
         
@@ -267,7 +268,7 @@ public class SpawnManager : MonoBehaviour
         while (_waveChange)
         {
             //Debug.Log("Inside WaveChange");
-            _enemiesLeft = _enemiesWave + (_currentWaves * _enemiesWaveAdditional);
+            _enemiesLeft = _eneimesToStartWave + (_currentWaves * _additionalEnemiesPerWave);
             _totalEnemiesSpawn = _enemiesLeft;
             _currentWaves++;
             _uI.EnemiesLeft(_enemiesLeft);
@@ -297,20 +298,25 @@ public class SpawnManager : MonoBehaviour
 
     public void EnemiesLeft()
     {
-
-        if (_enemiesLeft > 0)
+        _enemiesLeft--;
+        if (_enemiesLeft >= 0)
         {
-            _enemiesLeft--;
+            
             DisplayEnemyLeft();
 
         }
+        /*
         else
         {
-            //Debug.Log("WaveChange EnemiesLeft: " + _waveChange);
-            //ChangingWave();
-            _waveChange = true;
-           // ChangingWave();
+            if (!_spawnBoss)
+            {
+                Debug.Log("Inside Inverse of Spawn boss");
+                //ChangingWave();
+                _waveChange = true;
+                // ChangingWave();
+            }
         }
+        */
     }
 
     void DisplayEnemyLeft()
@@ -323,20 +329,37 @@ public class SpawnManager : MonoBehaviour
     {
         if (!_waveComplete)
         {
-            if (_totalEnemiesSpawn >= 1)
+            
+            _totalEnemiesSpawn--;
+            Debug.Log("Total Enemies Left: " + _totalEnemiesSpawn);
+
+            if (_totalEnemiesSpawn > 0)
             {
-                _totalEnemiesSpawn--;
+                
                 _enemiesSpawned++;
                 //Debug.Log("Enemies left: " + _totalEnemiesSpawn + " while Total at: " + _enemiesSpawned);
             }
             else
             {
-                //Debug.Log("WaveChange Inside EnemiesSpawned: " + _waveChange);
-                _waveComplete = true;
-                //_waveChange = true;
-                //_stopSpawning = true;
+                if (_currentWaves < _totalEnemyWave)
+                {
+                    //Debug.Log("WaveChange Inside EnemiesSpawned: " + _waveChange);
+                    _waveComplete = true;
+                    //_waveChange = true;
+                    //_stopSpawning = true;
+                }
+                else
+                {
+                    if (!_bossSpawned)
+                    {
+                        _spawnBoss = true;
+                        FinalBoss();
+                    }
+                }
+                        
             }
         }
+        /*
         else
         {
             if(_enemiesLeft < 1)
@@ -346,6 +369,13 @@ public class SpawnManager : MonoBehaviour
                 //ChangingWave();
             }
         }
+        */
+    }
+
+    void FinalBoss()
+    {
+        Instantiate(_theBoss, _theBoss.transform.position, Quaternion.identity);
+        _bossSpawned = true;
     }
 
 

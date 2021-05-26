@@ -49,6 +49,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Slider _collectionBar;
 
+    [Header("Health Bar")]
+    [SerializeField]
+    private Slider _healthBar;
+
+
     [Header("Enemy Waves")]
     [SerializeField]
     private Text _waveTextTitle;
@@ -61,6 +66,13 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private Text _enemiesLeftText;
+
+    [Header("Boss Health Bar")]
+    [SerializeField]
+    private Slider _bossHealthBar;
+
+    [SerializeField]
+    private Text _bossText;
 
 
     //Private Variables
@@ -85,7 +97,10 @@ public class UIManager : MonoBehaviour
             _cameraInitial = _mainCamera.transform.position;
         }
 
+        SetBossVisible(false);
+
     }
+
 
 
 
@@ -98,16 +113,24 @@ public class UIManager : MonoBehaviour
     {
 
         //_livesImg.sprite = _livesSprite[currentLives];
-        if(currentLives >= 0)
+        if(currentLives > 0)
         {
-            //_livesImg.sprite = _livesSprite[currentLives];
+            _livesImg.sprite = _livesSprite[currentLives];
         }
-        if (currentLives <= 0)
+        else 
         {
+            _livesImg.sprite = _livesSprite[currentLives];
             GameOverSequence();
         }
 
     }
+
+
+    public void PlayerHealth(int amt)
+    {
+        _healthBar.value = amt;
+    }
+
 
     public void ThrustUI(float x)
     {
@@ -189,4 +212,25 @@ public class UIManager : MonoBehaviour
         _waveTextTitle.gameObject.SetActive(true);
         _waveText.gameObject.SetActive(true);
     }
+
+
+    public void BossHealth(int health)
+    {
+        _bossHealthBar.value = health;
+    }
+
+    public void SetBossVisible(bool x)
+    {
+        if(!x)
+        {
+            _bossHealthBar.gameObject.SetActive(false);
+            _bossText.enabled = false;
+        }
+        else
+        {
+            _bossHealthBar.gameObject.SetActive(true);
+            _bossText.enabled = true;
+        }
+    }
+
 }

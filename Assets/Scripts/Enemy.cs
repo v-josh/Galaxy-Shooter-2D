@@ -140,12 +140,14 @@ public class Enemy : MonoBehaviour
 
     }
 
+    /*
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, 1.5f);
 
     }
+    */
 
     // Update is called once per frame
     void Update()
@@ -280,7 +282,7 @@ public class Enemy : MonoBehaviour
             Player scrPlayer = other.GetComponent<Player>();
             if (scrPlayer != null)
             {
-                scrPlayer.Damage();
+                scrPlayer.Damage(2);
             }
 
             //Combining the lines from above, but no null check
@@ -288,7 +290,8 @@ public class Enemy : MonoBehaviour
 
             if (!_activateShield)
             {
-                scrPlayer.SubtractEnemy();
+                //scrPlayer.SubtractEnemy();
+                _playerScript.SubtractEnemy();
                 _stillAlive = false;
                 _enemyAnim.SetTrigger("OnEnemyDeath");
                 _enemySpeed = 0f;
@@ -324,6 +327,14 @@ public class Enemy : MonoBehaviour
                 _enemyShield.SetActive(false);
             }
         }
+
+        /*
+        if(other.tag == "Player" || other.tag == "Laser")
+        {
+            _playerScript.SubtractEnemy();
+        }
+        */
+
     }
 
     void DefaultMovement()

@@ -7,13 +7,19 @@ public class Boss : MonoBehaviour
 
     [Header("Boss Stats")]
     [SerializeField]
-    private int _bossHealth = 20;
+    private int _bossHealth = 100;
 
     [SerializeField]
     private float _bossSpeed;
 
     [SerializeField]
     private float _delayFire = 2f;
+
+    [SerializeField]
+    private Vector2 _initalSpot;
+
+    [SerializeField]
+    private GameObject _explosion;
 
 
     [Header("Boss Fire Location")]
@@ -25,12 +31,6 @@ public class Boss : MonoBehaviour
 
     [SerializeField]
     private GameObject _rightFireLoc;
-
-    [SerializeField]
-    private GameObject _laserLeftLoc;
-
-    [SerializeField]
-    private GameObject _laserRightLoc;
 
     [Header("Boss Ammo")]
     [SerializeField]
@@ -65,10 +65,16 @@ public class Boss : MonoBehaviour
     private float _canFire = -1;
     private float _laserFire = 10;
 
-    //private bool _bigLaser = false;
 
     private bool _startLaser = false;
     private int _laserChosen = 0;
+
+    private Player _pS;
+    private UIManager _uI;
+
+    private bool _canStart = false;
+    private bool _stillAlive = true;
+    private MassiveLaser _massL;
 
 
     // Start is called before the first frame update
@@ -95,36 +101,70 @@ public class Boss : MonoBehaviour
         }
 
 
+        _pS = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        _uI = GameObject.FindGameObjectWithTag("UI").GetComponent<UIManager>();
+
+        _pS.BossSpawning(true);
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        //transform.position = new Vector2(Mathf.PingPong(Time.time, 5f), Mathf.PingPong(Time.time, 3f));
-
-        //transform.position = new Vector2(Mathf.PingPong(Time.time, 5f) - 5f, Mathf.PingPong(Time.time, 3f));
-
-        transform.position = new Vector2(Mathf.Lerp(-5, 5, Mathf.PingPong(Time.time * _bossSpeed, 1)), Mathf.PingPong(Time.time, 3));
-
-
-        if(Time.time > _canFire)
+        if (_stillAlive)
         {
-            RegularFire();
-        }
+            if (!_canStart)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, _initalSpot, _bossSpeed * 2f * Time.deltaTime);
+                if (Vector2.Distance(transform.position, _initalSpot) < 0.5f)
+                {
+                    _canFire += Time.time;
+                    _laserFire += Time.time;
+                    _canStart = true;
+                    _uI.SetBossVisible(true);
+                    _pS.BossSpawning(false);
+                }
+            }
+            else
+            {
 
-        if(Time.time > _laserFire)
-        {
-            LaserFire();
+                transform.position = new Vector2(Mathf.Lerp(-5, 5, Mathf.PingPong(Time.time * _bossSpeed, 1)), Mathf.PingPong(Time.time, 3));
+                /*
+                if (_initialStart)
+                {
+                    transform.position = Vector2.MoveTowards(transform.position, new Vector2(Mathf.Lerp(-5, 5, Mathf.PingPong(Time.time * _bossSpeed, 1)), Mathf.PingPong(Time.time, 3)), _bossSpeed * Time.deltaTime);
+                    _initialStart = false;
+                }
+                else
+                {
+                    transform.position = new Vector2(Mathf.Lerp(-5, 5, Mathf.PingPong(Time.time * _bossSpeed, 1)), Mathf.PingPong(Time.time, 3));
+                }
+                */
+
+                if (Time.time > _canFire)
+                {
+                    RegularFire();
+                }
+
+                if (Time.time > _laserFire)
+                {
+                    LaserFire();
+                }
+
+                if(_bossHealth <= 0)
+                {
+                    _stillAlive = false;
+                    OnDeath();
+                }
+            }
         }
 
     }
 
     void LaserFire()
     {
-        //Debug.Log("Inside Laser Fire");
         if (!_startLaser)
         {
-            Debug.Log("INside If statement Laser Fire");
             _laserChosen = Random.Range(0, 2);
             _startLaser = true;
             StartCoroutine(LaserSpawn());
@@ -172,12 +212,10 @@ public class Boss : MonoBehaviour
 
     IEnumerator LaserSpawn()
     {
-        Debug.Log("INside Coroutine");
         while (_startLaser == true)
         {
             ParticleSystem ps;
             ParticleSystem.MainModule mPart;
-            Debug.Log("INside While Laser Spawn");
             switch(_laserChosen)
             {
                 case 0:
@@ -204,11 +242,14 @@ public class Boss : MonoBehaviour
                 case 0:
                     _bossParticleLeft.Stop(true, ParticleSystemStopBehavior.StopEmitting);
                     _bossLeftLaser.SetActive(true);
+                    _massL = _bossLeftLaser.GetComponent<MassiveLaser>();
                     break;
                 case 1:
                     _bossParticleRight.Stop(true, ParticleSystemStopBehavior.StopEmitting);
                     
                     _bossRightLaser.SetActive(true);
+
+                    _massL = _bossRightLaser.GetComponent<MassiveLaser>();
                     break;
                 case 2:
                     break;
@@ -239,10 +280,36 @@ public class Boss : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "Laser")
+        if(collision.gameObject.tag == "Laser" && _stillAlive)
         {
+            _pS.AddToScore(10);
             _bossHealth--;
+            _uI.BossHealth(_bossHealth);
             Destroy(collision.gameObject);
         }
+    }
+
+    void OnDeath()
+    {
+        StopCoroutine(LaserSpawn());
+        _massL.StillAlive(false);
+        _startLaser = false;
+        _pS.BossSpawning(true);
+
+        StartCoroutine(BossExplosion());
+
+    }
+
+    IEnumerator BossExplosion()
+    {
+        Instantiate(_explosion, _leftFireLoc.transform.position, Quaternion.identity);
+        yield return new WaitForSeconds(0.5f);
+        Instantiate(_explosion, _rightFireLoc.transform.position, Quaternion.identity);
+        yield return new WaitForSeconds(0.5f);
+        Instantiate(_explosion, _middleFireLoc.transform.position, Quaternion.identity);
+        yield return new WaitForSeconds(2f);
+        Instantiate(_explosion, transform.position, Quaternion.identity);
+        yield return new WaitForSeconds(0.2f);
+        Destroy(this.gameObject);
     }
 }

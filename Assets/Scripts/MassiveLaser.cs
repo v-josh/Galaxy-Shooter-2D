@@ -5,47 +5,20 @@ using UnityEngine;
 public class MassiveLaser : MonoBehaviour
 {
 
-    [SerializeField]
-    private float _speed = 2f;
+    private bool _bossAlive = true;
 
-
-    private bool _canMove = false;
-
-
-    // Start is called before the first frame update
-    void Start()
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if(_canMove)
+        if(collision.tag == "Player" && _bossAlive)
         {
-            MoveLaser();
-        }
-
-        if(this.transform.position.y < -15f)
-        {
-            Destroy(this.gameObject);
+            Player ps = collision.gameObject.GetComponent<Player>();
+            ps.Damage(1);
         }
     }
 
-    void MoveLaser()
+    public void StillAlive(bool x)
     {
-        transform.Translate(Vector2.down * Time.deltaTime * _speed);
-    }
-
-    public void ActivateMovement()
-    {
-        StartCoroutine(CanMove());
-    }
-
-    IEnumerator CanMove()
-    {
-        yield return new WaitForSeconds(20f);
-        _canMove = true;
+        _bossAlive = x;
     }
 
 }

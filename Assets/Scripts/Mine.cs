@@ -55,7 +55,7 @@ public class Mine : MonoBehaviour
         else if (collision.tag == "Player")
         {
             Player ps = collision.gameObject.GetComponent<Player>();
-            ps.Damage();
+            ps.Damage(1);
             Instantiate(_explosion, transform.position, Quaternion.identity);
             Destroy(this.gameObject, 0.2f);
         }

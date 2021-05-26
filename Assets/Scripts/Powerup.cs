@@ -40,12 +40,15 @@ public class Powerup : MonoBehaviour
         
     }
 
+
+
+
     // Update is called once per frame
     void Update()
     {
         transform.Translate(Vector3.down * Time.deltaTime * _fallSpeed);
 
-        if(Input.GetKey(KeyCode.C) && !_pS.CollectingPickups())
+        if(Input.GetKey(KeyCode.C) && !_pS.CollectingPickups() && _pS.IsPlayerAlive() )
         {
             transform.position = Vector2.MoveTowards(transform.position, _thePlayer.transform.position, _fallSpeed * Time.deltaTime);
 

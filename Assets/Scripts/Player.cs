@@ -11,6 +11,9 @@ public class Player : MonoBehaviour
     private float _playerSpeed = 2.0f;
 
     [SerializeField]
+    private int _playerHealth = 100;
+
+    [SerializeField]
     private int _playerLives = 3;
 
     [SerializeField]
@@ -27,6 +30,12 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private GameObject _managerUI;
+
+    [SerializeField]
+    private GameObject _explosion;
+
+    [SerializeField]
+    private GameObject _playerThrust;
 
 
 
@@ -78,7 +87,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject _weaponFireworks;
 
-
+    [Header("Final Boss")]
+    [SerializeField]
+    private Vector2 _finalPosition;
 
 
 
@@ -91,6 +102,7 @@ public class Player : MonoBehaviour
     private Text _gameOverText;
     private AudioSource _sourcePlayer;
     private int _ammoCount = 15;
+    private int _maxHealth;
 
 
     //Thrusters Variables
@@ -114,11 +126,14 @@ public class Player : MonoBehaviour
     private float _maxCollectionAcceleration = 4.0f;
     private float _colAcceleration = 1.0f;
 
+    private bool _spawningBoss = false;
+    private bool _playerStillAlive = true;
+
 
     void Start()
     {
 
-        
+        _maxHealth = _playerHealth;
 
         if(_spwMan != null)
         {
@@ -196,23 +211,35 @@ public class Player : MonoBehaviour
     void Update()
     {
         //Player Movement
-        
-        CalculateMovement();
 
-        CollectionPickup();
-
-        //If the player press the Spacebar AND has surprassed the cooldown timer
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+        if (!_spawningBoss)
         {
-            if (!_startFireworks)
+            if (_playerStillAlive)
             {
-                Fire();
+                CalculateMovement();
+
+                CollectionPickup();
+
+                //If the player press the Spacebar AND has surprassed the cooldown timer
+                if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+                {
+                    if (!_startFireworks)
+                    {
+                        Fire();
+                    }
+                }
             }
+        }
+        else
+        {
+            MovePlayerForBoss();
         }
     }
 
     void CalculateMovement()
     {
+
+
         //Variables
         float horizontalAxis = Input.GetAxis("Horizontal");
         float verticalAxis = Input.GetAxis("Vertical");
@@ -308,7 +335,7 @@ public class Player : MonoBehaviour
         }        
     }
 
-    public void Damage()
+    public void Damage(int damage)
     {
 
         _uiManager.CameraShake();
@@ -319,23 +346,88 @@ public class Player : MonoBehaviour
         }
         else
         {
-            _playerLives--;
-            _uiManager.UpdateLives(_playerLives);
+            _playerHealth -= damage;
+            _uiManager.PlayerHealth(_playerHealth);
             _spwScr.HealthOdds(0.3f);
-            if (_playerLives >= 1)
+            if (_playerHealth >= 1)
             {
                 EngineOnFire(true);
             }
         }
 
-        if(_playerLives <= 0)
+
+
+
+        if(_playerHealth < 1)
         {
-            
-            _spwScr.OnPlayerDeath();
-            _uiManager.UpdateLives(_playerLives);
-            Destroy(this.gameObject);
+            _playerLives--;
+            if (_playerLives > 0)
+            {
+                
+                _uiManager.UpdateLives(_playerLives);
+                _playerStillAlive = false;
+                _engineFire[_firstEngine].SetActive(false);
+                _engineFire[_secondEngine].SetActive(false);
+                StartCoroutine(RestartPlayer());
+            }
+            else
+            {
+                //StopCoroutine(RestartPlayer());
+                _playerStillAlive = false;
+                _uiManager.UpdateLives(_playerLives);
+                _spwScr.OnPlayerDeath();
+                //_uiManager.UpdateLives(_playerLives);
+                Destroy(this.gameObject);
+            }
         }
     }
+
+    void RestartLives()
+    {
+        _playerHealth = _maxHealth;
+        _ammoCount = 15;
+        _uiManager.PlayerHealth(_playerHealth);
+        _uiManager.AmmoText(_ammoCount);
+
+
+    }
+
+
+    IEnumerator RestartPlayer()
+    {
+        while (!_playerStillAlive)
+        {
+            Instantiate(_explosion, transform.position, Quaternion.identity);
+
+            //this.gameObject.SetActive(false);
+
+            BoxCollider2D boxPlayer = this.gameObject.GetComponent<BoxCollider2D>();
+            boxPlayer.enabled = false;
+
+            SpriteRenderer playerSR = this.gameObject.GetComponent<SpriteRenderer>();
+            playerSR.enabled = false;
+
+            SpriteRenderer thrustSR = _playerThrust.gameObject.GetComponent<SpriteRenderer>();
+            thrustSR.enabled = false;
+            yield return new WaitForSeconds(1f);
+
+            //MovePlayerForBoss();
+            this.transform.position = _finalPosition;
+            yield return new WaitForSeconds(1f);
+            //this.gameObject.SetActive(true);
+            RestartLives();
+            playerSR.enabled = true;
+            thrustSR.enabled = true;
+            
+            yield return new WaitForSeconds(1f);
+
+            boxPlayer.enabled = true;
+            _playerStillAlive = true;
+        }
+    }
+
+
+
 
     public void TripleShotActive()
     {
@@ -419,10 +511,11 @@ public class Player : MonoBehaviour
 
     public void HealthRefill()
     {
-        if(_playerLives < 3)
+        if(_playerHealth < _maxHealth)
         {
-            _playerLives++;
-            _uiManager.UpdateLives(_playerLives);
+            _playerHealth++;
+            //_uiManager.UpdateLives(_playerHealth);
+            _uiManager.PlayerHealth(_playerHealth);
             EngineOnFire(false);
             _spwScr.HealthOdds(-0.3f);
         }
@@ -432,15 +525,32 @@ public class Player : MonoBehaviour
     {
         if(b)
         {
-            if(_playerLives == 2)
+
+            /*
+            if(_playerHealth == 2)
             {
                 _engineFire[_firstEngine].SetActive(true);
             }
-            else if(_playerLives == 1)
+            else if(_playerHealth == 1)
+            {
+                _engineFire[_secondEngine].SetActive(true);
+            }
+            */
+
+            //if(_playerHealth < )
+
+
+            if(_playerHealth < 90 && _playerHealth > 40)
+            {
+                _engineFire[_firstEngine].SetActive(true);
+            }
+            else if(_playerHealth < 40 && _playerHealth > 0)
             {
                 _engineFire[_secondEngine].SetActive(true);
             }
 
+
+            
             /*
             // Initial Random Engine Choice Logic
             int engineNumber = Random.Range(0, _engineFire.Count);
@@ -450,14 +560,25 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if(_playerLives == 3)
+            /*
+            if(_playerHealth == 3)
             {
                 _engineFire[_firstEngine].SetActive(false);
             }
-            else if(_playerLives == 2)
+            else if(_playerHealth == 2)
             {
                 _engineFire[_secondEngine].SetActive(false);
             }
+            */
+            if (_playerHealth > 90)
+            {
+                _engineFire[_firstEngine].SetActive(false);
+            }
+            else if (_playerHealth > 40)
+            {
+                _engineFire[_secondEngine].SetActive(false);
+            }
+
         }
     }
 
@@ -488,6 +609,7 @@ public class Player : MonoBehaviour
 
     void CollectionPickup()
     {
+
         if (Input.GetKey(KeyCode.C) && !_collectionCooldown)
         {
             if (_colAcceleration < _maxCollectionAcceleration)
@@ -536,6 +658,22 @@ public class Player : MonoBehaviour
     public void SubtractEnemy()
     {
         _spwScr.EnemiesLeft();
+    }
+
+    public void BossSpawning(bool x)
+    {
+        _spawningBoss = x;
+        _playerStillAlive = !x;
+    }
+
+    void MovePlayerForBoss()
+    {
+        transform.position = Vector2.MoveTowards(transform.position, _finalPosition, _playerSpeed * Time.deltaTime);
+    }
+
+    public bool IsPlayerAlive()
+    {
+        return _playerStillAlive;
     }
 
 }
