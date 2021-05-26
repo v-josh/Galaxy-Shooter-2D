@@ -37,6 +37,8 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject _playerThrust;
 
+    [SerializeField]
+    private GameObject _homingLaser;
 
 
 
@@ -125,6 +127,9 @@ public class Player : MonoBehaviour
     private float _collectionInitialAcceleration = 1.0f;
     private float _maxCollectionAcceleration = 4.0f;
     private float _colAcceleration = 1.0f;
+
+    //Rockets Add
+    private int _rocketsAdd = 0;
 
     private bool _spawningBoss = false;
     private bool _playerStillAlive = true;
@@ -228,6 +233,16 @@ public class Player : MonoBehaviour
                         Fire();
                     }
                 }
+
+
+                //Homing Laser
+                if(Input.GetKeyDown(KeyCode.F) && _rocketsAdd > 0)
+                {
+
+                    RocketsFunc();
+
+                }
+
             }
         }
         else
@@ -527,6 +542,53 @@ public class Player : MonoBehaviour
             _spwScr.HealthOdds(-0.3f);
         }
     }
+
+    public void RocketsAdd()
+    {
+        _rocketsAdd++;
+        _uiManager.RocketAmt(_rocketsAdd);
+    }
+
+
+    void RocketsFunc()
+    {
+        GameObject[] enemiesOnScreen = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject targetEnemy = null;
+        float checkDistance = Mathf.Infinity;
+
+        foreach (GameObject gO in enemiesOnScreen)
+        {
+            Vector2 difference = gO.transform.position - transform.position;
+            float squaredDiff = difference.sqrMagnitude;
+            if (checkDistance > squaredDiff)
+            {
+                checkDistance = squaredDiff;
+                targetEnemy = gO;
+            }
+
+        }
+
+
+        if (targetEnemy != null)
+        {
+            _rocketsAdd--;
+            _uiManager.RocketAmt(_rocketsAdd);
+
+            GameObject theLaser = Instantiate(_homingLaser, new Vector2(transform.position.x, transform.position.y + 1.6f), Quaternion.identity);
+            //theLaser.transform.localScale = new Vector3(theLaser.transform.localScale.x, Vector3.Distance(transform.position, targetEnemy.transform.position), 0f);
+
+            Laser ls = theLaser.GetComponent<Laser>();
+            ls.HomingLaser(targetEnemy);
+
+            //theLaser.transform.localScale = new Vector2(theLaser.transform.localScale.x, Mathf.Abs(transform.position.y - theLaser.transform.position.y) );
+            //theLaser.transform.LookAt(targetEnemy.transform);
+
+            //theLaser.transform.rotation = Quaternion.LookRotation(this.transform.position - targetEnemy.transform.position);
+
+            //theLaser.transform.LookAt(-targetEnemy.transform.position);
+        }
+    }
+
 
     void EngineOnFire(bool b)
     {

@@ -97,6 +97,7 @@ public class Powerup : MonoBehaviour
                         ps.AmmoDrain();
                         break;
                     case 7: //Rockets
+                        ps.RocketsAdd();
                         break;
                     default:
                         break;

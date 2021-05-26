@@ -78,6 +78,9 @@ public class SpawnManager : MonoBehaviour
     {
         _enemiesLeft = _eneimesToStartWave;
         _totalEnemiesSpawn = _enemiesLeft;
+
+
+
         if (_uI == null)
         {
             _uI = GameObject.FindWithTag("UI").GetComponent < UIManager >();
@@ -163,7 +166,7 @@ public class SpawnManager : MonoBehaviour
             
             else
             {
-                if (_enemiesLeft == 0)
+                if (_enemiesLeft <= 0)
                 {
                     //Debug.Log("Changing Waves inside CoRoutine");
                     ChangingWave();
@@ -237,7 +240,7 @@ public class SpawnManager : MonoBehaviour
             
 
             //Random Generate Power Ups
-            Instantiate(_powerUps[_theRandomNumber], postSpawn, Quaternion.identity);
+            //Instantiate(_powerUps[_theRandomNumber], postSpawn, Quaternion.identity);
             _randomSpin = true;
             //Manual Spawning For Testing purposes only
             //Instantiate(_powerUps[0], postSpawn, Quaternion.identity);    //Triple Shot
@@ -247,6 +250,7 @@ public class SpawnManager : MonoBehaviour
             //Instantiate(_powerUps[4], postSpawn, Quaternion.identity);    //Health Refill
             //Instantiate(_powerUps[5], postSpawn, Quaternion.identity);    //Fireworks
             //Instantiate(_powerUps[6], postSpawn, Quaternion.identity);    //Ammo Drain
+            Instantiate(_powerUps[7], postSpawn, Quaternion.identity);    //Rockets
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
     }
@@ -285,11 +289,11 @@ public class SpawnManager : MonoBehaviour
 
     void ChangingWave()
     {
-        if (_enemiesLeft == 0)
+        if (_enemiesLeft <= 0)
         {
 
             _waveChange = true;
-            //Debug.Log("WaveChange ChangingWave: " + _waveChange);
+            Debug.Log("WaveChange ChangingWave: " + _waveChange);
 
             StartCoroutine(WaveChange());
             StopCoroutine(WaveChange());
@@ -306,18 +310,18 @@ public class SpawnManager : MonoBehaviour
             DisplayEnemyLeft();
 
         }
-        /*
+        
         else
         {
             if (!_spawnBoss)
             {
-                Debug.Log("Inside Inverse of Spawn boss");
+                Debug.Log("Inside Inverse of Spawn boss within EnemiesLeft");
                 //ChangingWave();
                 _waveChange = true;
                 // ChangingWave();
             }
         }
-        */
+        
     }
 
     void DisplayEnemyLeft()
@@ -342,8 +346,11 @@ public class SpawnManager : MonoBehaviour
             }
             else
             {
+                Debug.Log("inside totalEnemiesSpawn less than 1, current waves at " + _currentWaves + " while TotalWaves at " + _totalEnemyWave);
                 if (_currentWaves < _totalEnemyWave)
                 {
+                    Debug.Log("inside CurrentWaves");
+
                     //Debug.Log("WaveChange Inside EnemiesSpawned: " + _waveChange);
                     _waveComplete = true;
                     //_waveChange = true;

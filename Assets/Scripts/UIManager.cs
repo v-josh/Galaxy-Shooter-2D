@@ -53,6 +53,10 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Slider _healthBar;
 
+    [Header("Rockets Status")]
+    [SerializeField]
+    private Text _rocketAmt;
+
 
     [Header("Enemy Waves")]
     [SerializeField]
@@ -86,6 +90,7 @@ public class UIManager : MonoBehaviour
         _livesImg.sprite = _livesSprite[_livesSprite.Length-1];
         _gameOverText.gameObject.SetActive(false);
         _restartLevel.gameObject.SetActive(false);
+        _rocketAmt.text = "0";
 
         if(_gameManager)
         {
@@ -157,6 +162,11 @@ public class UIManager : MonoBehaviour
     public void AmmoText(int i)
     {
         _ammoText.text = i.ToString();
+    }
+
+    public void RocketAmt(int i)
+    {
+        _rocketAmt.text = i.ToString();
     }
 
 

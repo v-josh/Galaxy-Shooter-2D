@@ -14,10 +14,12 @@ public class Laser : MonoBehaviour
     [SerializeField]
     private bool _enemyFireUp = false;
 
-    
-
     [SerializeField]
     private bool _isFireworks = false;
+
+    //Private Variable
+    private bool _isHomingLaser = false;
+    private GameObject _target;
 
     void Update()
     {
@@ -25,7 +27,17 @@ public class Laser : MonoBehaviour
         {
             if (!_isFireworks)
             {
-                PlayerLaser();
+
+                if (!_isHomingLaser)
+                {
+
+                    PlayerLaser();
+                }
+
+                else
+                {
+                    LockedOnEnemy();
+                }
             }
             else
             {
@@ -90,10 +102,17 @@ public class Laser : MonoBehaviour
     void Fireworks()
     {
         transform.Translate(Vector3.up * Time.deltaTime * _laserSpeed);
+        RemoveLaser();
+
+    }
+
+
+    void RemoveLaser()
+    {
         if (transform.position.y >= 11 || transform.position.y <= -11 || transform.position.x >= 11 || transform.position.x <= -11)
         {
 
-                Destroy(this.gameObject);
+            Destroy(this.gameObject);
         }
     }
 
@@ -111,6 +130,28 @@ public class Laser : MonoBehaviour
     public void AssignEnemyLaser()
     {
         _isEnemyLaser = true;
+    }
+
+    public void HomingLaser(GameObject go)
+    {
+        _isHomingLaser = true;
+        _target = go;
+
+    }
+
+    void LockedOnEnemy()
+    {
+        if (_target != null)
+        {
+            //transform.LookAt(_target.transform);
+            transform.up = _target.transform.position - transform.position;
+            transform.position = Vector2.MoveTowards(transform.position, _target.transform.position, _laserSpeed * Time.deltaTime);
+            
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     

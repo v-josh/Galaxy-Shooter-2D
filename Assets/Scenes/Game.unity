@@ -310,6 +310,7 @@ RectTransform:
   - {fileID: 377369390}
   - {fileID: 59260999}
   - {fileID: 1161323868}
+  - {fileID: 1415157238}
   - {fileID: 738684643}
   - {fileID: 2109600665}
   - {fileID: 764057381}
@@ -353,6 +354,7 @@ MonoBehaviour:
   _collectorText: {fileID: 78625431}
   _collectionBar: {fileID: 738684644}
   _healthBar: {fileID: 1104985596}
+  _rocketAmt: {fileID: 1365663858}
   _waveTextTitle: {fileID: 2109600666}
   _waveText: {fileID: 1089681012}
   _enemiesLeftTitle: {fileID: 764057382}
@@ -1221,7 +1223,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -100, y: -46.37}
+  m_AnchoredPosition: {x: -100, y: -21}
   m_SizeDelta: {x: 100, y: 22.74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &605828059
@@ -1530,7 +1532,7 @@ RectTransform:
   - {fileID: 1943077345}
   - {fileID: 78625430}
   m_Father: {fileID: 36914426}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -1642,6 +1644,7 @@ MonoBehaviour:
   - {fileID: 469767179675274453, guid: 5579b6a8091d20845ad3041b8dbf5e07, type: 3}
   - {fileID: 5544630271246928640, guid: de7d065fb2bd85b4da74a13c34238463, type: 3}
   - {fileID: 9000180034318217975, guid: d71f0be77a73a6347a234cd4abb957de, type: 3}
+  - {fileID: 4353073021445268094, guid: 1736c37f5dd0dc9438b6885bf7cbda34, type: 3}
   _powerUpProbability:
   - 0.4
   - 0.3
@@ -1649,7 +1652,8 @@ MonoBehaviour:
   - 0.9
   - 0.2
   - 0.05
-  - 1
+  - 0.8
+  - 0.01
   _theBoss: {fileID: 227640083329449773, guid: 1f3f77ac6e368de4ea32c528c1eea08a, type: 3}
   _totalEnemyWave: 5
 --- !u!4 &740625445
@@ -1767,7 +1771,7 @@ RectTransform:
   m_Children:
   - {fileID: 668563224}
   m_Father: {fileID: 36914426}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -2510,7 +2514,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -118.04, y: -69.109985}
+  m_AnchoredPosition: {x: -118, y: -43}
   m_SizeDelta: {x: 63.92, y: 22.74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1161323869
@@ -2667,7 +2671,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 36914426}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -2782,7 +2786,7 @@ RectTransform:
   - {fileID: 1304656302}
   - {fileID: 618852612}
   m_Father: {fileID: 36914426}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -2839,6 +2843,161 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &1365663856
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1365663857}
+  - component: {fileID: 1365663859}
+  - component: {fileID: 1365663858}
+  m_Layer: 5
+  m_Name: Rockets_Amt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1365663857
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365663856}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1415157238}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 18.68, y: -11.744998}
+  m_SizeDelta: {x: 37.35, y: 23.49}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1365663858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365663856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 0
+--- !u!222 &1365663859
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365663856}
+  m_CullTransparentMesh: 0
+--- !u!1 &1415157237
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1415157238}
+  - component: {fileID: 1415157240}
+  - component: {fileID: 1415157239}
+  m_Layer: 5
+  m_Name: Rockets_Title
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1415157238
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415157237}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1365663857}
+  m_Father: {fileID: 36914426}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -110.28, y: -70}
+  m_SizeDelta: {x: 79.45, y: 23.49}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1415157239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415157237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'Rockets: '
+--- !u!222 &1415157240
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415157237}
+  m_CullTransparentMesh: 0
 --- !u!1 &1449408577
 GameObject:
   m_ObjectHideFlags: 0
@@ -3220,7 +3379,7 @@ RectTransform:
   m_Children:
   - {fileID: 1104985595}
   m_Father: {fileID: 36914426}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -3419,6 +3578,8 @@ MonoBehaviour:
   _explosion: {fileID: 2019595546868739934, guid: 69e06ae8d3851fd418ef04e10658cb42,
     type: 3}
   _playerThrust: {fileID: 1086305161}
+  _homingLaser: {fileID: 7323311112770295863, guid: 4c3db7a52c4e220439483ec0205c716c,
+    type: 3}
   _tripleShotCooldown: 5
   _tripleShot: {fileID: 4741577414441247508, guid: c649f66de5df8b34c8cfe7fda7b80a89,
     type: 3}
@@ -3952,7 +4113,7 @@ RectTransform:
   m_Children:
   - {fileID: 1089681011}
   m_Father: {fileID: 36914426}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
