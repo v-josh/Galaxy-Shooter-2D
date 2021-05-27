@@ -63,7 +63,7 @@ public class SpawnManager : MonoBehaviour
     private bool _waveChange = false;
     private int _enemiesLeft;
     private int _currentWaves = 1;
-    private int _totalEnemiesSpawn;
+    private int _maxEnemySpawn;
     private bool _waveComplete = false;
 
     private int _enemiesSpawned = 0;
@@ -77,7 +77,7 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         _enemiesLeft = _eneimesToStartWave;
-        _totalEnemiesSpawn = _enemiesLeft;
+        _maxEnemySpawn = _enemiesLeft;
 
 
 
@@ -109,79 +109,143 @@ public class SpawnManager : MonoBehaviour
         _stopSpawning = true;
     }
 
+    public void OnPlayerActive()
+    {
+        _stopSpawning = false;
+    }
+
     IEnumerator SpawnEnemyRoutine()
     {
-
-        yield return new WaitForSeconds(3f);
-
-
         while (!_stopSpawning)
         {
+            //=========================================================
+            //     Picking Which Enemy to Spawn
+            //=========================================================
 
-
-            EnemiesSpawned();
-
-            int randomGenerator = Random.Range(0, _enemyPrefab.Length);
-            while (_enemySpin)
+            int valueRandom = Random.Range(0, _enemyPrefab.Length);     //Generate a value between 0 and the Enemy Prefab Array's length
+            while(_enemySpin)                                           //Check to see if the value falls between the probabilty to summon the enemy
             {
-                float enemyRandom = Random.value;
-                float enemyValue = _enemyProbability[randomGenerator] * _currentWaves;
-                //Debug.Log("Picked " + enemyRandom + " While probability at: " + (1f- enemyValue));
-                if (enemyRandom > (1f - enemyValue))
+                float enemyRandom = Random.value;                       //Generate a float between 0 and 1
+                float enemyProb = _enemyProbability[valueRandom] * _currentWaves;   //Take the enemy's probabilty and multiply it by the current Wave's value
+
+                //If the random value generated is greater than the probability,
+                if(enemyRandom > (1f - enemyProb) )
                 {
+                    //Then set the enemy spin bool to false to break the loop, thus accepting the enemy chosen
                     _enemySpin = false;
                 }
                 else
                 {
-                    randomGenerator = Random.Range(0, _enemyPrefab.Length);
+                    //Else, generate another random number again to see which enemy to choose
+                    valueRandom = Random.Range(0, _enemyPrefab.Length);
                 }
             }
 
-            Enemy eScript = _enemyPrefab[randomGenerator].GetComponent<Enemy>();
-            int movementNumber = eScript.TheMovement();
+            //=========================================================
+            //     Choosing Where to Spawn the Enemy
+            //=========================================================
 
-            if (_waveComplete == false)
+            if (!_waveComplete && _enemiesSpawned < _maxEnemySpawn)
             {
-                if (_enemiesLeft > 0)
-                {
-                    if (movementNumber >= 0)
-                    {
+                Enemy eScript = _enemyPrefab[valueRandom].GetComponent<Enemy>();    //Get the Enemy Script from the gameObject that's going to be spawn
+                int movementNumber = eScript.TheMovement();                         //Determine if the enemy is moving "side to side" or "up to down"
 
-                        //Generate an enemy at a Random number between -8 and 8 on the X axis, 7 on the Y, and 0 at Z
-                        //The rotation of the clone is the same as the original and attach it to the Enemy Container
-                        Instantiate(_enemyPrefab[randomGenerator], new Vector3(Random.Range(-8, 8), 7f, 0f), Quaternion.identity, _enemyContainer.transform);
-                    }
-                    else if (movementNumber == -1)
-                    {
-                        Instantiate(_enemyPrefab[randomGenerator], new Vector3(-12f, Random.Range(-4f, 4f)), Quaternion.identity, _enemyContainer.transform);
-                    }
-                    else
-                    {
-                        Instantiate(_enemyPrefab[randomGenerator], new Vector3(12f, Random.Range(-4f, 4f)), Quaternion.identity, _enemyContainer.transform);
+                //=========================================================
+                //     Spawn the Enemy
+                //=========================================================
 
-                    }
-                    _enemySpin = true;
-                }
-            }
-            
-            else
-            {
-                if (_enemiesLeft <= 0)
+                if(movementNumber >= 0)
                 {
-                    //Debug.Log("Changing Waves inside CoRoutine");
-                    ChangingWave();
+                    _enemiesSpawned++;
+                    //Normal Enemy, so Spawn above screen
+                    Vector3 posToSpawn = new Vector3(Random.Range(-8f, 8f), 7f, 0f);
+                    Instantiate(_enemyPrefab[valueRandom], posToSpawn, Quaternion.identity, _enemyContainer.transform);
                 }
+                else if (movementNumber == -1)
+                {
+                    _enemiesSpawned++;
+                    //This Enemy is moving from left to right, so spawn this enemy on the left of the screen
+                    Vector3 posToSpawn = new Vector3(-12f, Random.Range(-4f, 4f), 0f);
+                    Instantiate(_enemyPrefab[valueRandom], posToSpawn, Quaternion.identity, _enemyContainer.transform);
+                }
+                else if (movementNumber == -2)
+                {
+                    _enemiesSpawned++;
+                    //This Enemy is moving from right to left, so spawn this enemy on the right of the screen
+                    Vector3 posToSpawn = new Vector3(12f, Random.Range(-4f, 4f), 0f);
+                    Instantiate(_enemyPrefab[valueRandom], posToSpawn, Quaternion.identity, _enemyContainer.transform);
+                }
+
+                _enemySpin = true;
+
             }
+
             
             yield return new WaitForSeconds(_enemySpawnTime);
         }
         
     }
 
+    IEnumerator WaveChange()
+    {
+        yield return new WaitForSeconds(5.0f);
+
+        while (_waveComplete)
+        {
+            _enemiesLeft = _eneimesToStartWave + (_currentWaves * _additionalEnemiesPerWave);
+            _maxEnemySpawn = _enemiesLeft;
+            _currentWaves++;
+            _uI.EnemiesLeft(_enemiesLeft);
+            _uI.CurrentWave(_currentWaves);
+            _enemiesSpawned = 0;
+            _waveChange = false;
+            _waveComplete = false;
+        }
+
+        yield return new WaitForSeconds(1.0f);
+    }
+
+    public void EnemiesLeft()
+    {
+        _enemiesLeft--;
+        DisplayEnemyLeft();
+        
+        if(_enemiesLeft <= 0)
+        {
+
+            if (_currentWaves < _totalEnemyWave)
+            {
+                _waveComplete = true;
+                StartCoroutine(WaveChange());
+            }
+            else
+            {
+                FinalBoss();
+            }
+        }
+        
+    }
+
+    void DisplayEnemyLeft()
+    {
+        _uI.EnemiesLeft(_enemiesLeft);
+    }
+
+
+    void FinalBoss()
+    {
+        Instantiate(_theBoss, _theBoss.transform.position, Quaternion.identity);
+        _bossSpawned = true;
+    }
+
+    /// 
+    /// POWER UPS & PLAYER RELATED METHODS
+    /// 
+
     IEnumerator SpawnPowerupRoutine()
     {
         yield return new WaitForSeconds(3f);
-        
+
 
         while (_stopSpawning == false)
         {
@@ -201,11 +265,11 @@ public class SpawnManager : MonoBehaviour
                     case 3:
                         probValue += _ammoOdds;
 
-                        if(probValue > 1f)
+                        if (probValue > 1f)
                         {
                             probValue = 1f;
                         }
-                        else if(probValue < 0f)
+                        else if (probValue < 0f)
                         {
                             probValue = _powerUpProbability[_theRandomNumber];
                         }
@@ -213,11 +277,11 @@ public class SpawnManager : MonoBehaviour
                     case 4:
                         probValue += _healthOdds;
 
-                        if(probValue > 1f)
+                        if (probValue > 1f)
                         {
                             probValue = 1f;
                         }
-                        else if(probValue < 0f)
+                        else if (probValue < 0f)
                         {
                             probValue = _powerUpProbability[_theRandomNumber];
                         }
@@ -227,7 +291,7 @@ public class SpawnManager : MonoBehaviour
                         break;
                 }
 
-                if (randomValue > (1f - probValue) )
+                if (randomValue > (1f - probValue))
                 {
                     _randomSpin = false;
                 }
@@ -237,10 +301,10 @@ public class SpawnManager : MonoBehaviour
                     yield return new WaitForSeconds(0.1f);
                 }
             }
-            
+
 
             //Random Generate Power Ups
-            //Instantiate(_powerUps[_theRandomNumber], postSpawn, Quaternion.identity);
+            Instantiate(_powerUps[_theRandomNumber], postSpawn, Quaternion.identity);
             _randomSpin = true;
             //Manual Spawning For Testing purposes only
             //Instantiate(_powerUps[0], postSpawn, Quaternion.identity);    //Triple Shot
@@ -250,7 +314,7 @@ public class SpawnManager : MonoBehaviour
             //Instantiate(_powerUps[4], postSpawn, Quaternion.identity);    //Health Refill
             //Instantiate(_powerUps[5], postSpawn, Quaternion.identity);    //Fireworks
             //Instantiate(_powerUps[6], postSpawn, Quaternion.identity);    //Ammo Drain
-            Instantiate(_powerUps[7], postSpawn, Quaternion.identity);    //Rockets
+            //Instantiate(_powerUps[7], postSpawn, Quaternion.identity);    //Rockets
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
     }
@@ -264,130 +328,6 @@ public class SpawnManager : MonoBehaviour
     {
         _ammoOdds = f;
     }
-
-    IEnumerator WaveChange()
-    {
-        //Debug.Log("Inside WaveChange CoRoutine");
-        yield return new WaitForSeconds(5.0f);
-
-        while (_waveChange)
-        {
-            //Debug.Log("Inside WaveChange");
-            _enemiesLeft = _eneimesToStartWave + (_currentWaves * _additionalEnemiesPerWave);
-            _totalEnemiesSpawn = _enemiesLeft;
-            _currentWaves++;
-            _uI.EnemiesLeft(_enemiesLeft);
-            _uI.CurrentWave(_currentWaves);
-            _enemiesSpawned = 0;
-            _waveChange = false;
-            _waveComplete = false;
-        }
-
-
-        yield return new WaitForSeconds(1.0f);
-    }
-
-    void ChangingWave()
-    {
-        if (_enemiesLeft <= 0)
-        {
-
-            _waveChange = true;
-            Debug.Log("WaveChange ChangingWave: " + _waveChange);
-
-            StartCoroutine(WaveChange());
-            StopCoroutine(WaveChange());
-
-        }
-    }
-
-    public void EnemiesLeft()
-    {
-        _enemiesLeft--;
-        if (_enemiesLeft >= 0)
-        {
-            
-            DisplayEnemyLeft();
-
-        }
-        
-        else
-        {
-            if (!_spawnBoss)
-            {
-                Debug.Log("Inside Inverse of Spawn boss within EnemiesLeft");
-                //ChangingWave();
-                _waveChange = true;
-                // ChangingWave();
-            }
-        }
-        
-    }
-
-    void DisplayEnemyLeft()
-    {
-        _uI.EnemiesLeft(_enemiesLeft);
-    }
-
-
-    void EnemiesSpawned()
-    {
-        if (!_waveComplete)
-        {
-            
-            _totalEnemiesSpawn--;
-            Debug.Log("Total Enemies Left: " + _totalEnemiesSpawn);
-
-            if (_totalEnemiesSpawn > 0)
-            {
-                
-                _enemiesSpawned++;
-                //Debug.Log("Enemies left: " + _totalEnemiesSpawn + " while Total at: " + _enemiesSpawned);
-            }
-            else
-            {
-                Debug.Log("inside totalEnemiesSpawn less than 1, current waves at " + _currentWaves + " while TotalWaves at " + _totalEnemyWave);
-                if (_currentWaves < _totalEnemyWave)
-                {
-                    Debug.Log("inside CurrentWaves");
-
-                    //Debug.Log("WaveChange Inside EnemiesSpawned: " + _waveChange);
-                    _waveComplete = true;
-                    //_waveChange = true;
-                    //_stopSpawning = true;
-                }
-                else
-                {
-                    if (!_bossSpawned)
-                    {
-                        _spawnBoss = true;
-                        FinalBoss();
-                    }
-                }
-                        
-            }
-        }
-        /*
-        else
-        {
-            if(_enemiesLeft < 1)
-            {
-                _waveComplete = true;
-                //Debug.Log("Changing Waves inside Enemies Spawned");
-                //ChangingWave();
-            }
-        }
-        */
-    }
-
-    void FinalBoss()
-    {
-        Instantiate(_theBoss, _theBoss.transform.position, Quaternion.identity);
-        _bossSpawned = true;
-    }
-
-
-
 
 
 }

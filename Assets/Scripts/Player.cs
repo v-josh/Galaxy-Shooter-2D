@@ -70,6 +70,10 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int _shieldHealth = 2;
 
+    [Header("Health Recovery")]
+    [SerializeField]
+    private int _recoverAmt = 5;
+
     [Header("Engine Fire")]
     [SerializeField]
     private List<GameObject> _engineFire;
@@ -407,6 +411,12 @@ public class Player : MonoBehaviour
 
     }
 
+    public void GameFinished()
+    {
+        _spwScr.OnPlayerDeath();
+        this.gameObject.SetActive(false);
+    }
+
 
     IEnumerator RestartPlayer()
     {
@@ -426,16 +436,15 @@ public class Player : MonoBehaviour
             thrustSR.enabled = false;
             yield return new WaitForSeconds(1f);
 
-            //MovePlayerForBoss();
             this.transform.position = _finalPosition;
             yield return new WaitForSeconds(1f);
-            //this.gameObject.SetActive(true);
             RestartLives();
-            playerSR.enabled = true;
-            thrustSR.enabled = true;
+
             
             yield return new WaitForSeconds(1f);
 
+            playerSR.enabled = true;
+            thrustSR.enabled = true;
             boxPlayer.enabled = true;
             _playerStillAlive = true;
         }
@@ -535,8 +544,12 @@ public class Player : MonoBehaviour
     {
         if(_playerHealth < _maxHealth)
         {
-            _playerHealth++;
-            //_uiManager.UpdateLives(_playerHealth);
+            _playerHealth += _recoverAmt;
+
+            if(_playerHealth > _maxHealth)
+            {
+                _playerHealth = _maxHealth;
+            }
             _uiManager.PlayerHealth(_playerHealth);
             EngineOnFire(false);
             _spwScr.HealthOdds(-0.3f);
@@ -575,17 +588,9 @@ public class Player : MonoBehaviour
             _uiManager.RocketAmt(_rocketsAdd);
 
             GameObject theLaser = Instantiate(_homingLaser, new Vector2(transform.position.x, transform.position.y + 1.6f), Quaternion.identity);
-            //theLaser.transform.localScale = new Vector3(theLaser.transform.localScale.x, Vector3.Distance(transform.position, targetEnemy.transform.position), 0f);
 
             Laser ls = theLaser.GetComponent<Laser>();
             ls.HomingLaser(targetEnemy);
-
-            //theLaser.transform.localScale = new Vector2(theLaser.transform.localScale.x, Mathf.Abs(transform.position.y - theLaser.transform.position.y) );
-            //theLaser.transform.LookAt(targetEnemy.transform);
-
-            //theLaser.transform.rotation = Quaternion.LookRotation(this.transform.position - targetEnemy.transform.position);
-
-            //theLaser.transform.LookAt(-targetEnemy.transform.position);
         }
     }
 
@@ -594,20 +599,6 @@ public class Player : MonoBehaviour
     {
         if(b)
         {
-
-            /*
-            if(_playerHealth == 2)
-            {
-                _engineFire[_firstEngine].SetActive(true);
-            }
-            else if(_playerHealth == 1)
-            {
-                _engineFire[_secondEngine].SetActive(true);
-            }
-            */
-
-            //if(_playerHealth < )
-
 
             if(_playerHealth < 90 && _playerHealth > 40)
             {
@@ -618,27 +609,10 @@ public class Player : MonoBehaviour
                 _engineFire[_secondEngine].SetActive(true);
             }
 
-
-            
-            /*
-            // Initial Random Engine Choice Logic
-            int engineNumber = Random.Range(0, _engineFire.Count);
-            _engineFire[engineNumber].SetActive(true);
-            _engineFire.RemoveAt(engineNumber);
-            */
         }
         else
         {
-            /*
-            if(_playerHealth == 3)
-            {
-                _engineFire[_firstEngine].SetActive(false);
-            }
-            else if(_playerHealth == 2)
-            {
-                _engineFire[_secondEngine].SetActive(false);
-            }
-            */
+
             if (_playerHealth > 90)
             {
                 _engineFire[_firstEngine].SetActive(false);
@@ -733,6 +707,7 @@ public class Player : MonoBehaviour
     {
         _spawningBoss = x;
         _playerStillAlive = !x;
+
     }
 
     void MovePlayerForBoss()

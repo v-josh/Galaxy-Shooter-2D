@@ -16,6 +16,9 @@ public class UIManager : MonoBehaviour
     private Text _gameOverText;
 
     [SerializeField]
+    private Text _finalScore;
+
+    [SerializeField]
     private Text _restartLevel;
 
     [SerializeField]
@@ -82,6 +85,7 @@ public class UIManager : MonoBehaviour
     //Private Variables
     private GameManager _gm;
     private Vector3 _cameraInitial;
+    private int _theScore;
 
     // Start is called before the first frame update
     void Start()
@@ -112,6 +116,7 @@ public class UIManager : MonoBehaviour
     public void UpdateScore(int score)
     {
         _scoreText.text = "Score: " + score;
+        _theScore = score;
     }
 
     public void UpdateLives(int currentLives)
@@ -125,9 +130,46 @@ public class UIManager : MonoBehaviour
         else 
         {
             _livesImg.sprite = _livesSprite[currentLives];
+            _gameOverText.text = "GAME OVER";
+            UIGameOverDisable();
             GameOverSequence();
         }
+    }
 
+    void UIGameOverDisable()
+    {
+        /*
+        _scoreText.gameObject.SetActive(false);
+        _ammoText.gameObject.SetActive(false);
+        _rocketAmt.gameObject.SetActive(false);
+        _livesImg.gameObject.SetActive(false);
+        _thrustText.gameObject.SetActive(false);
+        _collectionBar.gameObject.SetActive(false);
+        _healthBar.gameObject.SetActive(false);
+        _bossHealthBar.gameObject.SetActive(false);
+        */
+
+        for(int i = 0; i < this.transform.childCount; i++)
+        {
+            GameObject theChild = transform.GetChild(i).gameObject;
+
+            if(theChild != null)
+            {
+                theChild.SetActive(false);
+            }
+        }
+
+
+
+        _finalScore.text = "Final Score: " + _theScore;
+
+    }
+
+    public void CompleteGame()
+    {
+        _gameOverText.text = "CONGRATS!";
+        UIGameOverDisable();
+        GameOverSequence();
     }
 
 
@@ -172,6 +214,7 @@ public class UIManager : MonoBehaviour
 
     void GameOverSequence()
     {
+        
         _restartLevel.gameObject.SetActive(true);
         _gm.GameOver();
         StartCoroutine(GameOver());

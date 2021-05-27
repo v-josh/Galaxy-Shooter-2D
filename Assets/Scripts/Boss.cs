@@ -292,9 +292,13 @@ public class Boss : MonoBehaviour
     void OnDeath()
     {
         StopCoroutine(LaserSpawn());
-        _massL.StillAlive(false);
         _startLaser = false;
         _pS.BossSpawning(true);
+
+        if(_massL != null)
+        {
+            _massL.StillAlive(false);
+        }
 
         StartCoroutine(BossExplosion());
 
@@ -310,6 +314,8 @@ public class Boss : MonoBehaviour
         yield return new WaitForSeconds(2f);
         Instantiate(_explosion, transform.position, Quaternion.identity);
         yield return new WaitForSeconds(0.2f);
+        _uI.CompleteGame();
+        _pS.GameFinished();
         Destroy(this.gameObject);
     }
 }

@@ -339,6 +339,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scoreText: {fileID: 605828059}
   _gameOverText: {fileID: 2109733723}
+  _finalScore: {fileID: 856159785}
   _restartLevel: {fileID: 377369391}
   _livesImg: {fileID: 231756857}
   _livesSprite:
@@ -889,7 +890,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &377369390
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1633,9 +1634,9 @@ MonoBehaviour:
   _enemyProbability:
   - 1
   - 0.0015
-  - 0.001
+  - 0.0001
   - 0.0005
-  - 0.002
+  - 0.0002
   _powerUps:
   - {fileID: 8208565317594316654, guid: ddcb448b3c1dde940bd8e5350ab25c45, type: 3}
   - {fileID: 4469557635891370793, guid: b4430074ae8b44d4eae89a7a552ddec0, type: 3}
@@ -1652,7 +1653,7 @@ MonoBehaviour:
   - 0.9
   - 0.2
   - 0.05
-  - 0.8
+  - 0.5
   - 0.01
   _theBoss: {fileID: 227640083329449773, guid: 1f3f77ac6e368de4ea32c528c1eea08a, type: 3}
   _totalEnemyWave: 5
@@ -1890,6 +1891,83 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 787151040}
+  m_CullTransparentMesh: 0
+--- !u!1 &856159783
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 856159784}
+  - component: {fileID: 856159786}
+  - component: {fileID: 856159785}
+  m_Layer: 5
+  m_Name: FInal_Score
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &856159784
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856159783}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2109733722}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -68.54}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &856159785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856159783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'Final Score: 0'
+--- !u!222 &856159786
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856159783}
   m_CullTransparentMesh: 0
 --- !u!1 &974879656
 GameObject:
@@ -3589,6 +3667,7 @@ MonoBehaviour:
   _speedBoostActive: 0
   _shieldChild: {fileID: 8619091473337011190}
   _shieldHealth: 2
+  _recoverAmt: 5
   _engineFire:
   - {fileID: 1085557881}
   - {fileID: 486863970}
@@ -4177,7 +4256,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2109733722
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4188,7 +4267,8 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 856159784}
   m_Father: {fileID: 36914426}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

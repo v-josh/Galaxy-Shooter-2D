@@ -86,7 +86,6 @@ public class Enemy : MonoBehaviour
         if (_enemyShield == null)
         {
             _enemyShield = this.transform.GetChild(0).gameObject;
-            //_enemyShield.SetActive(false);
         }
 
 
@@ -140,15 +139,6 @@ public class Enemy : MonoBehaviour
 
     }
 
-    /*
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, 1.5f);
-
-    }
-    */
-
     // Update is called once per frame
     void Update()
     {
@@ -168,15 +158,6 @@ public class Enemy : MonoBehaviour
         {
             _fireRate = Random.Range(2f, 6f);
             _canFire = Time.time + _fireRate;
-
-            /*
-            GameObject enemyLaser = Instantiate(_enemyLaser, transform.position, Quaternion.identity);
-            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-            for (int i = 0; i < lasers.Length; i++)
-            {
-                lasers[i].AssignEnemyLaser();
-            }
-            */
             CreateLasers();
 
         }
@@ -184,15 +165,6 @@ public class Enemy : MonoBehaviour
         {
             _fireRate = Random.Range(0f, 2f);
             _powerFire = Time.time + _fireRate;
-
-            /*
-            GameObject enemyLaser = Instantiate(_enemyLaser, transform.position, Quaternion.identity);
-            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-            for (int i = 0; i < lasers.Length; i++)
-            {
-                lasers[i].AssignEnemyLaser();
-            }
-            */
             CreateLasers();
 
         }
@@ -232,14 +204,6 @@ public class Enemy : MonoBehaviour
             CreateLasers();
             _fireUp = false;
         }
-        /*
-        GameObject enemyLaser = Instantiate(_enemySingleLaser, transform.position, Quaternion.identity);
-        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-        for (int i = 0; i < lasers.Length; i++)
-        {
-            lasers[i].AssignEnemyLaser();
-        }
-        */
     }
 
 
@@ -290,7 +254,7 @@ public class Enemy : MonoBehaviour
 
             if (!_activateShield)
             {
-                //scrPlayer.SubtractEnemy();
+                Destroy(GetComponent<Collider2D>());
                 _playerScript.SubtractEnemy();
                 _stillAlive = false;
                 _enemyAnim.SetTrigger("OnEnemyDeath");
@@ -307,8 +271,11 @@ public class Enemy : MonoBehaviour
         }
         else if (other.tag == "Laser")
         {
+
             if (!_activateShield)
             {
+                Destroy(GetComponent<Collider2D>());
+
                 _stillAlive = false;
 
                 Destroy(other.gameObject);
@@ -317,7 +284,7 @@ public class Enemy : MonoBehaviour
                 _enemySpeed = 0f;
                 _enemyAnim.SetTrigger("OnEnemyDeath");
                 _sourceEnemy.Play();
-                Destroy(GetComponent<Collider2D>());
+                
                 Destroy(this.gameObject, 2.3f);
             }
             else
@@ -327,14 +294,6 @@ public class Enemy : MonoBehaviour
                 _enemyShield.SetActive(false);
             }
         }
-
-        /*
-        if(other.tag == "Player" || other.tag == "Laser")
-        {
-            _playerScript.SubtractEnemy();
-        }
-        */
-
     }
 
     void DefaultMovement()
@@ -351,25 +310,7 @@ public class Enemy : MonoBehaviour
 
     void RotateMovement()
     {
-        //DefaultMovement();
-
-
-        //_xAngle = 20f * Mathf.Cos(_angle) * Time.deltaTime;
-        //_yAngle = 20f * Mathf.Sin(_angle) * Time.deltaTime;
-        //transform.position = new Vector3(_xAngle + transform.parent.position.x, _yAngle + transform.parent.position.y, 0f);
-        //transform.position = new Vector2(_xAngle, _yAngle) * _angle * Time.deltaTime;
-        //Debug.Log("Y is: " + y);
-        //_angle += 20  * Time.deltaTime * Mathf.Rad2Deg;
-        
-        
-        //_angle += (_enemySpeed / (20f * 2f * Mathf.PI)) * Time.deltaTime;
-        //transform.position = new Vector3(_xAngle, _yAngle, 0f);
-
-        //transform.Rotate(new Vector3(_xAngle, _yAngle, 0f), _angle);
-
         transform.RotateAround(transform.parent.position, Vector3.forward, Time.deltaTime * 360f);
-
-
 
     }
 
@@ -432,7 +373,8 @@ public class Enemy : MonoBehaviour
     public int TheMovement()
     {
         int numberGet = 0;
-        if (_sideNumber < 0)
+
+        if(_sideNumber >= 0)
         {
             numberGet = _movementChoice;
         }
@@ -452,7 +394,6 @@ public class Enemy : MonoBehaviour
         {
             if (Vector3.Distance(transform.position, _thePlayer.transform.position) < 3f)
             {
-                //transform.Translate()
                 transform.position = Vector3.MoveTowards(transform.position, _thePlayer.transform.position, _enemySpeed * Time.deltaTime);
             }
 
